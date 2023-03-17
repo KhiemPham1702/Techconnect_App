@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Profile() {
     const [fontsLoaded] = useFonts({
@@ -29,8 +30,7 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-        <Icon2 name='arrow-left'size={35} color={'black'} marginLeft={15} marginTop={30}/>
-        <Text style={styles.title} marginLeft={142} marginTop={-35}>My Profile</Text>
+        <Text style={styles.title} marginLeft={142} marginTop={35}>My Profile</Text>
         <View padding={30}>
             <View style={styles.view_ava}>
                 <View style={styles.avatar_view}>
@@ -56,90 +56,92 @@ export default function Profile() {
             </View>
         </View>
         <View style={styles.view_bot}>
-            <View flexDirection='row' marginTop={25}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/tabler.png')}/>               
+            <ScrollView>
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/tabler.png')}/>               
+                    </View>
+                    <Text style={styles.section}>History of purchases</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section}>History of purchases</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={20}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/discount_ic.png')}/>               
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/discount_ic.png')}/>               
+                    </View>
+                    <Text style={styles.section}>My discount</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section}>My discount</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={20}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/heart.png')}/>               
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/heart.png')}/>               
+                    </View>
+                    <Text style={styles.section}>Liked</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section}>Liked</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={15}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/ic-star.png')}/>               
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/ic-star.png')}/>               
+                    </View>
+                    <Text style={styles.section}>My assessment</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section}>My assessment</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View paddingHorizontal={0}>
-                <View style={styles.line} />
-            </View>
-            <View flexDirection='row' marginTop={5}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/change.png')}/>               
+                <View paddingHorizontal={0}>
+                    <View style={styles.line} />
                 </View>
-                <Text style={styles.section}>Change Password</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={20}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/info.png')}/>               
+                <View flexDirection='row' marginTop={5}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/change.png')}/>               
+                    </View>
+                    <Text style={styles.section}>Change Password</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section}>Infomation</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={20}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/help.png')}/>               
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/info.png')}/>               
+                    </View>
+                    <Text style={styles.section}>Infomation</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section}>Help</Text>
-                <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={20}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/admin.png')}/>               
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/help.png')}/>               
+                    </View>
+                    <Text style={styles.section}>Help</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section3}>Admin manage</Text>
-                <Icon name='chevron-right' size={30} color={color.green} marginTop={3} marginLeft={110}/>
-            </View>
-            <View flexDirection='row' marginTop={20}>
-                <View style={styles.avatar_view4}>
-                    <Image
-                        style={styles.image4}
-                        source={require('../image/log-out.png')}/>               
+                <View flexDirection='row' marginTop={15}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/admin.png')}/>               
+                    </View>
+                    <Text style={styles.section3}>Admin manage</Text>
+                    <Icon name='chevron-right' size={30} color={color.green} marginTop={3} marginLeft={110}/>
                 </View>
-                <Text style={styles.section2}>Log Out</Text>
-                <Icon name='chevron-right' size={30} color={color.red} marginTop={3} marginLeft={110}/>
-            </View>
+                <View flexDirection='row' marginTop={15} marginBottom={65}>
+                    <View style={styles.avatar_view4}>
+                        <Image
+                            style={styles.image4}
+                            source={require('../image/log-out.png')}/>               
+                    </View>
+                    <Text style={styles.section2}>Log Out</Text>
+                    <Icon name='chevron-right' size={30} color={color.red} marginTop={3} marginLeft={110}/>
+                </View>
+            </ScrollView>
         </View>
     </View>
   )

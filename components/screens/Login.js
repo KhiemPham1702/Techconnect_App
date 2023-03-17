@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
 export default function Login() {
+  const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
     Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -57,7 +59,8 @@ export default function Login() {
       </View>
       <Text style={styles.textForgot}>Forgot Password?</Text>
       <View style={styles.button}>
-          <Text style={styles.buttonText}>LOGIN</Text>
+          <Text style={styles.buttonText}
+            onPress={() => navigation.navigate('Tab_navigation')}>LOGIN</Text>
       </View>
       <View style={styles.IconConnect}>
         <View style={styles.Face}>
@@ -81,7 +84,8 @@ export default function Login() {
       </View>
       <View style={styles.Textbottom}>
         <Text style={styles.text}>Not a member?</Text>
-        <Text style={styles.SignUpChange}>SignUp</Text>
+        <Text style={styles.SignUpChange} 
+            onPress={() => navigation.navigate('SignUp')}>SignUp</Text>
       </View>
     </View>
   );

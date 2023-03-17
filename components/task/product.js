@@ -5,10 +5,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { useEffect , useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 
 const product = () => {
+    const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -31,6 +33,7 @@ const product = () => {
             <View style={StyleSheet.absoluteFill} >
                     <Svg height={111} width={175}> 
                     <Image 
+                        onPress={() => navigation.navigate('Product_detail')}
                         href={require('../image/rog_lap.jpg')} 
                         height={111} 
                         width={175}

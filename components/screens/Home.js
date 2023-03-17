@@ -1,8 +1,12 @@
-import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, FlatList} from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect , useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
+import Tabbar from "@mindinventory/react-native-tab-bar-interaction";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon2 from 'react-native-vector-icons/MaterialIcons';
 
 import color from '../../contains/color';
 import Product_review from '../task/product_review';
@@ -10,6 +14,7 @@ import Brand from '../task/brand';
 import Product from '../task/product';
 
 export default function Home() {
+    const navigation = useNavigation();
     const DATA = [
         {
           id: '1',
@@ -55,7 +60,7 @@ export default function Home() {
         SplashScreen.hideAsync();
     };
     const renderItem = () => {
-        return <Product />;
+        return <Product/>;
       };
   return (
     <View style={styles.container}>
@@ -92,7 +97,7 @@ export default function Home() {
             </Svg>
         </View>        
       </View>
-      <ScrollView marginTop={20}>
+      <ScrollView marginTop={20} >
         <Text style={styles.textTop}>Discover Your Best</Text>
         <View marginTop={27}>
             <ScrollView horizontal>
@@ -174,12 +179,13 @@ export default function Home() {
                 </ScrollView>
             </View>
             <Text style={styles.textMid} >Popular Products</Text>
-            <FlatList marginTop={10}
+            <FlatList marginTop={10} marginBottom={65}
                 marginLeft={22}
                 showsVerticalScrollIndicator={false}
                 numColumns={2}
-                data={DATA}
-                renderItem={renderItem}>
+                data={DATA}              
+                renderItem={renderItem}
+                >
             </FlatList>
       </ScrollView>
     </View>
@@ -247,6 +253,7 @@ const styles = StyleSheet.create({
         color: color.white,
         fontFamily: 'Inter_SemiBold',
         marginTop: 11,
+        
     },
 })
 
