@@ -1,18 +1,19 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, ScrollView} from 'react-native';
 import { useFonts } from 'expo-font';
 import Svg, { Image } from "react-native-svg";
 import { useEffect, useState } from 'react';
+import Checkbox from 'expo-checkbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon2 from 'react-native-vector-icons/Feather';
+
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Product_cart from '../task/product_cart';
 import Product from '../task/product';
 
 export default function My_cart() {
     const navigation = useNavigation();
+    const [isChecked, setChecked] = useState(false);
     const DATA = [
         {
           id: '1',
@@ -68,9 +69,27 @@ export default function My_cart() {
         <Icon name='trash-o' size={35} color={color.white} marginLeft={352} marginTop={35}/>
         <Text style={styles.title} marginLeft={162} marginTop={-35}>My Cart</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
-            <View flexDirection='row' marginLeft={30} marginTop={20}>
-                <Icon2 name='box' size={30} color={color.white} />
-                <Text style={styles.list} marginLeft={10}>Item list</Text>
+            <View flexDirection='row' marginLeft={20} marginTop={20}>
+                <Checkbox
+                    style={styles.checkbox}
+                    marginTop={10}
+                    value={isChecked}
+                    onValueChange={setChecked}
+                    color={isChecked ? color.red : undefined}
+                />
+                <Text style={styles.list} marginLeft={5} marginTop={10}>Select All</Text>
+                <View marginLeft={60}>
+                    <Text style={styles.total}>Total Prices</Text>
+                    <Text style={styles.price}>$1000</Text>
+                </View>
+                <TouchableOpacity onPress={() => navigation.navigate('Payment')}>
+                    <View style={styles.button2}>
+                        <Text style={styles.buttonText2}>Buy now (0)</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <View paddingHorizontal={15}>
+                <View style={styles.line} />
             </View>
             <FlatList
                 marginTop={22}
@@ -85,7 +104,7 @@ export default function My_cart() {
             </View>
             <Text style={styles.list} marginLeft={15}>Suggestions for you</Text>
             <FlatList
-                marginTop={22}
+                marginTop={15}
                 marginLeft={22}
                 marginBottom={65}
                 showsVerticalScrollIndicator={false}
@@ -110,7 +129,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter_Medium',
     },
     list: {
-        fontSize: 20,
+        fontSize: 18,
         color: color.white,
         fontFamily: 'Inter_Medium',
     },
@@ -121,4 +140,40 @@ const styles = StyleSheet.create({
         width: '100%',
         marginVertical: 10,
     },
+    checkbox: {
+        height: 25,
+        width: 25,
+        borderColor: color.white,
+        borderRadius: 5,
+        borderWidth: 2,
+        marginRight: 10,
+    },
+    total: {
+        fontSize: 14,
+        color: color.white,
+        fontFamily: 'Inter_Medium',
+    },
+    price: {
+        fontSize: 18,
+        color: color.red,
+        fontFamily: 'Inter_Medium',
+        textAlign: 'right',
+    },
+    button2: {
+        backgroundColor: color.red,
+        height: 40,
+        width: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        marginTop: 5,
+        marginHorizontal: 15,
+      },
+      buttonText2: {
+        fontStyle: 'normal',
+        fontSize: 12,
+        color: 'white',
+        letterSpacing: 1,
+        fontFamily: 'Inter_SemiBold',
+      },
 })

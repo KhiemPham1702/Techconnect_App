@@ -1,14 +1,14 @@
-import { View, Text, StyleSheet, Image, TextInput} from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
-import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Profile() {
+    const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -48,10 +48,12 @@ export default function Profile() {
                 <Text style={styles.name_user} marginTop={10}>Nguyen Van A</Text>
                 <Text style={styles.id_user}>ID: 0123456789</Text>
                 <View style={styles.avatar_view3}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Edit_profile')}>
                     <Image
                         style={styles.image3}
                         source={require('../image/edit.png')}
-                    />               
+                    />  
+                    </TouchableOpacity>             
                 </View>
             </View>
         </View>
@@ -63,8 +65,8 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/tabler.png')}/>               
                     </View>
-                    <Text style={styles.section}>History of purchases</Text>
-                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
+                    <Text style={styles.section} onPress={() => navigation.navigate('History')}>History of purchases</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('History')}/>
                 </View>
                 <View flexDirection='row' marginTop={15}>
                     <View style={styles.avatar_view4}>
@@ -72,8 +74,8 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/discount_ic.png')}/>               
                     </View>
-                    <Text style={styles.section}>My discount</Text>
-                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
+                    <Text style={styles.section} onPress={() => navigation.navigate('My_discount')}>My discount</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('My_discount')}/>
                 </View>
                 <View flexDirection='row' marginTop={15}>
                     <View style={styles.avatar_view4}>
@@ -81,8 +83,8 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/heart.png')}/>               
                     </View>
-                    <Text style={styles.section}>Liked</Text>
-                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
+                    <Text style={styles.section} onPress={() => navigation.navigate('Liked')}>Liked</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('Liked')}/>
                 </View>
                 <View flexDirection='row' marginTop={15}>
                     <View style={styles.avatar_view4}>
@@ -90,8 +92,8 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/ic-star.png')}/>               
                     </View>
-                    <Text style={styles.section}>My assessment</Text>
-                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
+                    <Text style={styles.section} onPress={() => navigation.navigate('My_assessment')}>My assessment</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('My_assessment')}/>
                 </View>
                 <View paddingHorizontal={0}>
                     <View style={styles.line} />
@@ -102,8 +104,8 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/change.png')}/>               
                     </View>
-                    <Text style={styles.section}>Change Password</Text>
-                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110}/>
+                    <Text style={styles.section} onPress={() => navigation.navigate('EmailConfirm')}>Change Password</Text>
+                    <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('EmailConfirm')}/>
                 </View>
                 <View flexDirection='row' marginTop={15}>
                     <View style={styles.avatar_view4}>
@@ -138,8 +140,8 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/log-out.png')}/>               
                     </View>
-                    <Text style={styles.section2}>Log Out</Text>
-                    <Icon name='chevron-right' size={30} color={color.red} marginTop={3} marginLeft={110}/>
+                    <Text style={styles.section2} onPress={() => navigation.navigate('Login')}>Log Out</Text>
+                    <Icon name='chevron-right' size={30} color={color.red} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('Login')}/>
                 </View>
             </ScrollView>
         </View>

@@ -4,11 +4,12 @@ import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import User_commented from '../task/user_commented';
 
 export default function My_assessment() {
+  const navigation = useNavigation();
     const DATA = [
         {
           id: '1',
@@ -87,6 +88,7 @@ export default function My_assessment() {
             <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
                 <Image 
+                onPress={() => navigation.goBack()}
                     href={require('../image/icon_back_white.png')} 
                     height={40} 
                     width={40}

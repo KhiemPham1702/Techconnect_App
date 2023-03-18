@@ -1,13 +1,15 @@
-import { View, Text, StyleSheet, Image, TextInput} from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity} from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import Icon2 from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
 export default function Edit_profile() {
+    const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -28,7 +30,7 @@ export default function Edit_profile() {
 
   return (
     <View style={styles.container}>
-        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30}/>
+        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.goBack()}/>
         <Text style={styles.title} marginLeft={142} marginTop={-35}>Edit Profile</Text>
         <View padding={30}>
             <View style={styles.view_ava}>
@@ -68,9 +70,11 @@ export default function Edit_profile() {
                     placeholder="Address"
                     placeholderTextColor={color.white}/>
             </View>
-            <View style={styles.button2}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <View style={styles.button2} >
                 <Text style={styles.buttonText2}>Complete</Text>
             </View>
+            </TouchableOpacity>
         </View>
         
     </View>

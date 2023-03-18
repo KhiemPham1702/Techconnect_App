@@ -7,12 +7,13 @@ import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/EvilIcons';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Product_pay from '../task/product_pay';
 
 export default function New_address() {
+    const navigation = useNavigation();
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const DATA = [
@@ -49,7 +50,7 @@ export default function New_address() {
 
   return (
     <View style={styles.container}>
-        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30}/>
+        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.goBack()}/>
         <Text style={styles.title} marginLeft={132} marginTop={-35}>New_address</Text>
         <View style={styles.contact}>
             <Text style={styles.address}>Contact</Text>
@@ -98,9 +99,11 @@ export default function New_address() {
                         />
                 </View>
             </View>
-            <View style={styles.button2}>
-                <Text style={styles.buttonText2}>Complete</Text>
-            </View>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+                <View style={styles.button2}>
+                    <Text style={styles.buttonText2}>Complete</Text>
+                </View>
+            </TouchableOpacity>
         </View>
     </View>
   )
