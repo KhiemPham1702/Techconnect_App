@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
 export default function Start() {
+  const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
     Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -37,7 +39,9 @@ export default function Start() {
         </Svg>
       </View>
       <View style={styles.button}>
-          <Text style={styles.buttonText}>Get started</Text>
+          <Text style={styles.buttonText}
+            onPress={() => navigation.navigate('Login')}
+            >Get started</Text>
       </View>
     </View>
   );

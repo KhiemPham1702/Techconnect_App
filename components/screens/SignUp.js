@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import CheckBox from 'react-native-check-box';
+import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { useEffect , useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -8,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import color from '../../contains/color';
 
 export default function SignUp() {
+  const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [isChecked, setIsChecked] = useState(false);
   const [fontsLoaded] = useFonts({
@@ -90,7 +92,8 @@ export default function SignUp() {
         checkBoxColor={color.white}
           />
       <View style={styles.button}>
-          <Text style={styles.buttonText}>SIGN UP</Text>
+          <Text style={styles.buttonText}
+            onPress={() => navigation.navigate('Verify')}>SIGN UP</Text>
       </View>
       <View style={styles.IconConnect}>
         <View style={styles.Face}>
@@ -114,7 +117,8 @@ export default function SignUp() {
       </View>
       <View style={styles.Textbottom}>
         <Text style={styles.text}>You already a member?</Text>
-        <Text style={styles.SignUpChange}>Login</Text>
+        <Text style={styles.SignUpChange}
+          onPress={() => navigation.navigate('Login')}>Login</Text>
       </View>
     </View>
   );

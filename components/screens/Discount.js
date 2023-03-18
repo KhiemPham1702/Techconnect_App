@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import Icon2 from 'react-native-vector-icons/Feather';
+import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -81,11 +82,20 @@ export default function Discount() {
       };
     return(
         <View style={styles.container}>
-            <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30}/>
-            <Text style={styles.title} marginLeft={112} marginTop={-35}>Discount Coupons</Text>
+            <View style={StyleSheet.absoluteFill} marginLeft={15} marginTop={30}>
+                <Svg height={40} width={40}>
+                <Image 
+                    href={require('../image/logo.png')} 
+                    height={40} 
+                    width={40}
+                    preserveAspectRatio="xMidYMid slice"/>
+                </Svg>
+            </View>
+            <Text style={styles.title} marginLeft={112} marginTop={35}>Discount Coupons</Text>
             <CategoryList/>
             <FlatList 
                 marginLeft={22}
+                marginBottom={65}
                 showsVerticalScrollIndicator={false}
                 data={DATA}
                 renderItem={renderItem2}>

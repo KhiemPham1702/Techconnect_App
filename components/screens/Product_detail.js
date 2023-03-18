@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 import Comment from '../task/comment';
@@ -14,6 +15,7 @@ import Product from '../task/product';
 const { width } = Dimensions.get('window');
 
 export default function Product_detail() {
+    const navigation = useNavigation();
     const DATA = [
         { id: "1", title: "Trademark" },
         { id: "2", title: "Guarantee" },
@@ -147,6 +149,7 @@ export default function Product_detail() {
                 <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                     <Svg height={40} width={40}  >
                     <Image 
+                        onPress={() => navigation.goBack()}
                         href={require('../image/icon_back_white.png')} 
                         height={40} 
                         width={40}

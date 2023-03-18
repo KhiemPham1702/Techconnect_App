@@ -1,16 +1,18 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 import { useFonts } from 'expo-font';
+import Svg, { Image } from "react-native-svg";
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/Feather';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Product_cart from '../task/product_cart';
 import Product from '../task/product';
 
 export default function My_cart() {
+    const navigation = useNavigation();
     const DATA = [
         {
           id: '1',
@@ -54,8 +56,16 @@ export default function My_cart() {
       };
   return (
     <View style={styles.container}>
-        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30}/>
-        <Icon name='trash-o' size={35} color={color.white} marginLeft={352} marginTop={-36}/>
+        <View style={StyleSheet.absoluteFill} marginLeft={15} marginTop={30}>
+                <Svg height={40} width={40}>
+                <Image 
+                    href={require('../image/logo.png')} 
+                    height={40} 
+                    width={40}
+                    preserveAspectRatio="xMidYMid slice"/>
+            </Svg>
+        </View>
+        <Icon name='trash-o' size={35} color={color.white} marginLeft={352} marginTop={35}/>
         <Text style={styles.title} marginLeft={162} marginTop={-35}>My Cart</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
             <View flexDirection='row' marginLeft={30} marginTop={20}>
@@ -77,6 +87,7 @@ export default function My_cart() {
             <FlatList
                 marginTop={22}
                 marginLeft={22}
+                marginBottom={65}
                 showsVerticalScrollIndicator={false}
                 numColumns={2}
                 data={DATA}

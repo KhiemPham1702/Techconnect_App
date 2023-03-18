@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
 export default function NewPass() {
+  const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
     Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -39,6 +41,7 @@ export default function NewPass() {
       <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
                 <Image 
+                    onPress={() => navigation.goBack()}
                     href={require('../image/icon_back_white.png')} 
                     height={40} 
                     width={40}
@@ -76,7 +79,8 @@ export default function NewPass() {
         </View> 
       </View>
       <View style={styles.button}>
-          <Text style={styles.buttonText}>RESET PASS</Text>
+          <Text style={styles.buttonText}
+            onPress={() => navigation.navigate('Home')}>RESET PASS</Text>
       </View>
     </View>
   );

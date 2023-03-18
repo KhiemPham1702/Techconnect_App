@@ -4,11 +4,13 @@ import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 import Product from '../task/product';
 
 export default function List_product() {
+  const navigation = useNavigation();
     const DATA = [
         {
           id: '1',
@@ -99,7 +101,7 @@ export default function List_product() {
             <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
                 <Image 
-                    href={require('../image/icon_back_white.png')} 
+                    href={require('../image/logo.png')} 
                     height={40} 
                     width={40}
                     preserveAspectRatio="xMidYMid slice"/>
@@ -122,7 +124,7 @@ export default function List_product() {
             </View>
             <Icon name='menu' size={35} color={color.white} marginTop={-40} marginLeft={362}></Icon>
             <CategoryList/>
-            <FlatList marginTop={15}
+            <FlatList marginTop={15} marginBottom={65}
                 marginLeft={22}
                 showsVerticalScrollIndicator={false}
                 numColumns={2}

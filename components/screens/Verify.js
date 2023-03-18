@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
 export default function Verify() {
+  const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
     Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -28,7 +30,7 @@ export default function Verify() {
     <View style={styles.container}>
       <View style={StyleSheet.absoluteFill}>
         <Svg height={height} width={width}>
-          <Image
+          <Image            
             href={require('../image/Verify.png')}
             width={width}
             height={height}
@@ -39,6 +41,7 @@ export default function Verify() {
       <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
                 <Image 
+                    onPress={() => navigation.navigate('SignUp')}
                     href={require('../image/icon_back_white.png')} 
                     height={40} 
                     width={40}
@@ -50,7 +53,8 @@ export default function Verify() {
         placeholder="Verifycation Code"
         placeholderTextColor={color.white}/>
       <View style={styles.button}>
-          <Text style={styles.buttonText}>ACCURACY</Text>
+          <Text style={styles.buttonText}
+            onPress={() => navigation.navigate('NewPass')}>ACCURACY</Text>
       </View>
     </View>
   );
