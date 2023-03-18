@@ -7,12 +7,13 @@ import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/EvilIcons';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
-
+import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Product_pay from '../task/product_pay';
 
 export default function Payment() {
+    const navigation = useNavigation();
     const [isChecked, setChecked] = useState(false);
     const DATA = [
         {
@@ -50,7 +51,7 @@ export default function Payment() {
       };
   return (
     <View style={styles.container}>
-        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30}/>
+        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.goBack()}/>
         <Text style={styles.title} marginLeft={162} marginTop={-35}>Payment</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
             <View flexDirection='row' marginLeft={30} marginTop={20}>
@@ -64,7 +65,7 @@ export default function Payment() {
                     </View>
                     <Text style={styles.user} marginTop={2}>Street A, District 7, Ho Chi Minh City</Text>                   
                 </View>
-                <Icon3 name='chevron-right' size={40} color={color.white} marginTop={20} marginLeft={15}/>
+                <Icon3 name='chevron-right' size={40} color={color.white} marginTop={20} marginLeft={15} onPress={() => navigation.navigate('New_address')}/>
             </View>
             <View paddingHorizontal={15}>
                         <View style={styles.line} />
@@ -81,8 +82,12 @@ export default function Payment() {
                 <View flexDirection='row'>
                     <Icon4 name='ticket-percent-outline' size={30} color={color.white}/>
                     <Text style={styles.section} marginTop={5}>Discount</Text>
-                    <Text style={styles.dis_check}>Choose discount</Text>
-                    <Icon3 name='chevron-right' size={25} color={color.white} marginTop={7} marginLeft={5}/>
+                    <TouchableOpacity onPress={() => navigation.navigate('My_discount')}>
+                        <View flexDirection='row'>
+                            <Text style={styles.dis_check}>Choose discount</Text>
+                            <Icon3 name='chevron-right' size={25} color={color.white} marginTop={7} marginLeft={5}/>
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 <View flexDirection='row' marginTop={10}>
                     <Icon name='dollar' size={25} color={color.white} marginLeft={8}></Icon>
@@ -169,7 +174,17 @@ export default function Payment() {
                 </View>
             </View>
         </ScrollView>
-        
+        <View style={styles.bottom_view}>
+            <View marginLeft={200}>
+                    <Text style={styles.total} marginTop={10}>Total Prices</Text>
+                    <Text style={styles.price}>$1000</Text>
+                </View>
+                <TouchableOpacity >
+                    <View style={styles.button2}>
+                        <Text style={styles.buttonText2}>Oder</Text>
+                    </View>
+                </TouchableOpacity>
+        </View>
     </View>
   )
 }
@@ -260,5 +275,38 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: color.red,
         fontFamily: 'Inter_Medium',
-    }
+    },
+    bottom_view: {
+        backgroundColor: color.white,
+        height: 70,
+        flexDirection: 'row',
+    },
+    total: {
+        fontSize: 14,
+        color: color.grey_text,
+        fontFamily: 'Inter_Medium',
+    },
+    price: {
+        fontSize: 18,
+        color: color.red,
+        fontFamily: 'Inter_Medium',
+        textAlign: 'right',
+    },
+    button2: {
+        backgroundColor: color.red,
+        height: 40,
+        width: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        marginTop: 15,
+        marginHorizontal: 15,
+      },
+      buttonText2: {
+        fontStyle: 'normal',
+        fontSize: 16,
+        color: 'white',
+        letterSpacing: 1,
+        fontFamily: 'Inter_SemiBold',
+      },
 })

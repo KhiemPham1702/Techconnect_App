@@ -18,6 +18,7 @@ import Edit_profile from './components/screens/Edit_profile';
 import Discount from './components/screens/Discount';
 import Profile from './components/screens/Profile';
 import Liked from './components/screens/Liked';
+import My_discount from './components/screens/My_discount';
 import My_assessment from './components/screens/My_assessment';
 import Histoty from './components/screens/History';
 import Tab_navigation from './components/navigation/Tab_navigation';
@@ -47,6 +48,7 @@ const App = () => {
         <Stack.Screen name="New_address" component={New_address}/>
         <Stack.Screen name="Edit_profile" component={Edit_profile}/>
         <Stack.Screen name="Discount" component={Discount}/>
+        <Stack.Screen name="My_discount" component={My_discount}/>
         <Stack.Screen name="Profile" component={Profile}/>
         <Stack.Screen name="Liked" component={Liked}/>
         <Stack.Screen name="My_assessment" component={My_assessment}/>

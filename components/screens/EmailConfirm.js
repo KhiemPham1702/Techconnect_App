@@ -2,11 +2,13 @@ import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
 export default function EmailConfirm() {
+  const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
     Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -39,6 +41,7 @@ export default function EmailConfirm() {
       <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
                 <Image 
+                onPress={() => navigation.goBack()}
                     href={require('../image/icon_back_white.png')} 
                     height={40} 
                     width={40}

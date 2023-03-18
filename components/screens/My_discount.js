@@ -1,15 +1,14 @@
-import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, FlatList, TouchableOpacity } from 'react-native';
-import Svg, { Image } from "react-native-svg";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import Icon2 from 'react-native-vector-icons/Feather';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
-import Product_bought from '../task/product_bought';
+import Discount_ticket from '../task/discount_ticket';
 
-export default function History() {
-  const navigation = useNavigation();
+export default function My_discount() {
+    const navigation = useNavigation();
     const DATA = [
         {
           id: '1',
@@ -37,9 +36,8 @@ export default function History() {
           },
       ];
     const [catergoryIndex, setCategoryIndex] = useState(0);
-    const categories = ['All', 'Newest', 'Price'];
+    const categories = ['All', 'Free Ship', 'Sale Off', 'New Coupons'];
 
-    const { height, width } = Dimensions.get("window");
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -58,8 +56,8 @@ export default function History() {
         SplashScreen.hideAsync();
     };
 
-    const renderItem = () => {
-        return <Product_bought />;
+    const renderItem2 = () => {
+        return <Discount_ticket />;
     };
 
     const CategoryList = () => {
@@ -70,38 +68,28 @@ export default function History() {
                 key={index}
                 activeOpacity={0.8}
                 onPress={() => setCategoryIndex(index)}>
-                <Text
-                  style={[
-                    styles.categoryText,
-                    catergoryIndex === index && styles.categoryTextSelected,
-                  ]}>
-                  {item}
-                </Text>
+                    <Text
+                    style={[
+                        styles.categoryText,
+                        catergoryIndex === index && styles.categoryTextSelected,
+                    ]}>
+                    {item}
+                    </Text>
               </TouchableOpacity>
             ))}
-            <Icon name='sort' color={color.white} size={25} marginTop={-3}/>
           </View>
         );
       };
     return(
         <View style={styles.container}>
-            <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
-                <Svg height={40} width={40}  >
-                <Image 
-                onPress={() => navigation.goBack()}
-                    href={require('../image/icon_back_white.png')} 
-                    height={40} 
-                    width={40}
-                    preserveAspectRatio="xMidYMid slice"/>
-                </Svg>
-            </View> 
-            <Text style={styles.title} marginLeft={172} marginTop={30}>History</Text>
+            <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.goBack()}/>
+            <Text style={styles.title} marginLeft={112} marginTop={-35}>Discount Coupons</Text>
             <CategoryList/>
-            <FlatList marginTop={10}
+            <FlatList 
                 marginLeft={22}
                 showsVerticalScrollIndicator={false}
                 data={DATA}
-                renderItem={renderItem}>
+                renderItem={renderItem2}>
             </FlatList>
         </View>
     )
@@ -117,29 +105,7 @@ const styles = StyleSheet.create({
         color: color.white,
         fontFamily: 'Inter_Medium',
     },
-    searchtext: {
-        flexDirection: 'row',
-        height: 50,
-        width: 280,
-        marginLeft: 70,
-        justifyContent: 'center',
-        marginTop: 24,  
-        paddingLeft: 15,
-        backgroundColor: color.grey_text,
-        
-        borderRadius: 30,
-        fontFamily: 'Inter_Light',
-      },
-    searchhinttext: {
-        flex: 1,
-        fontStyle: 'normal',
-        fontSize: 14,
-        color: color.white,
-        letterSpacing: 1,
-        fontFamily: 'Inter_Light',
-      },
-    
-      categoryContainer: {
+    categoryContainer: {
         flexDirection: 'row',
         marginTop: 30,
         marginBottom: 20,
@@ -158,4 +124,3 @@ const styles = StyleSheet.create({
         borderColor: color.red,
       },
 })
-
