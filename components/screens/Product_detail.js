@@ -227,12 +227,14 @@ export default function Product_detail() {
                         <View flexDirection='row' marginLeft={15}>
                             <View>
                                 <FlatList
+                                    nestedScrollEnabled={true}
                                     data={DATA}
                                     renderItem={renderItem}
                                     keyExtractor={(item) => item.id}/>
                             </View>
                             <View marginLeft={35}>
                                 <FlatList
+                                    nestedScrollEnabled={true}
                                         data={DATA2}
                                         renderItem={renderItem2}
                                         keyExtractor={(item) => item.id}/>
@@ -273,6 +275,7 @@ export default function Product_detail() {
                             showsVerticalScrollIndicator={false}
                             numColumns={2}
                             data={DATA3}
+                            nestedScrollEnabled={true}
                             renderItem={renderProduct}>
                         </FlatList>
                     </ScrollView>
@@ -333,6 +336,7 @@ export default function Product_detail() {
                         showsVerticalScrollIndicator={false}
                         numColumns={3}
                         data={DATA4}
+                        nestedScrollEnabled={true}
                         renderItem={({ item }) => (
                         <View style={styles.view_buttom}>
                             <Text style={styles.view_text_buttom}>{item.title}</Text>
@@ -353,7 +357,7 @@ export default function Product_detail() {
                     </View>
                     <TouchableOpacity >
                     <View style={styles.button2}>
-                        <Text style={styles.buttonText2}>Oder</Text>
+                        <Text style={styles.buttonText2}>Buy Now</Text>
                     </View>
                 </TouchableOpacity>
                 </Animated.View>

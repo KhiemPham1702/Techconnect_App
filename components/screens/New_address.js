@@ -9,7 +9,7 @@ import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+
 import Product_pay from '../task/product_pay';
 
 export default function New_address() {
