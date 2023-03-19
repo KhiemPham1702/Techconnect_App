@@ -223,6 +223,7 @@ export default function List_product() {
                 showsVerticalScrollIndicator={false}
                 numColumns={2}
                 data={DATA}
+                nestedScrollEnabled={true}
                 renderItem={renderItem}>
             </FlatList>
             {isVisible && (

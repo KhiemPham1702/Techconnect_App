@@ -96,6 +96,7 @@ export default function My_cart() {
                 marginLeft={22}
                 showsVerticalScrollIndicator={false}
                 numColumns={1}
+                nestedScrollEnabled={true}
                 data={DATA}
                 renderItem={renderItem}>
             </FlatList>
@@ -108,6 +109,7 @@ export default function My_cart() {
                 marginLeft={22}
                 marginBottom={65}
                 showsVerticalScrollIndicator={false}
+                nestedScrollEnabled={true}
                 numColumns={2}
                 data={DATA}
                 renderItem={renderItem2}>
