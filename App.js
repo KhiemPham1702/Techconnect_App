@@ -23,6 +23,8 @@ import My_assessment from './components/screens/My_assessment';
 import Histoty from './components/screens/History';
 import Tab_navigation from './components/navigation/Tab_navigation';
 
+//import { myProducts } from './components/DAL/ProductDAL';
+
 const App = () => {
   const Stack = createNativeStackNavigator();
 

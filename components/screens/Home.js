@@ -8,15 +8,16 @@ import Tabbar from "@mindinventory/react-native-tab-bar-interaction";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 
-
 import color from '../../contains/color';
 import Product_review from '../task/product_review';
 import Brand from '../task/brand';
 import Product from '../task/product';
 
-export default function Home() {
+
+export default async function Home() {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     const navigation = useNavigation();
+    
     const DATA = [
         {
           id: '1',
@@ -62,7 +63,7 @@ export default function Home() {
         SplashScreen.hideAsync();
     };
     const renderItem = () => {
-        return <Product/>;
+        return <Product />;
       };
   return (
     <View style={styles.container}>

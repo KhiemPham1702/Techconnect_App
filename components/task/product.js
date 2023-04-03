@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 
+
 const product = () => {
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
@@ -53,7 +54,7 @@ const product = () => {
                 </Svg>
                 </View>
             </View>
-            <Text style={styles.Pro_name}>ROG Mothership GZ700</Text>
+            <Text style={styles.Pro_name}>{}</Text>
             <View style={styles.star}>
                 <Icon name="star" size={15} color={color.yellow} />
                 <Icon name="star" size={15} color={color.yellow} marginLeft={3}/>
