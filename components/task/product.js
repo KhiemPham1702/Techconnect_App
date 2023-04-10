@@ -9,7 +9,13 @@ import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 
-const product = () => {
+import { db, ref, set, child, get, onValue, storage } from '../DAL/Database'
+
+const product = (props) => {
+    // const set = new Set(props.data);
+    //console.log(props.data);
+
+
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -28,13 +34,47 @@ const product = () => {
     } else {
         SplashScreen.hideAsync();
     };
+
+    //const [Image, setImage] = useState([]);
+
+    // const ListImage = useState([]);
+
+    // useEffect(() => {
+    //     // Update the document title using the browser API
+    //     const starCountRef = ref(db, "Image/");
+    //     setProductDetail([]);
+    //     onValue(
+    //         starCountRef,
+    //         (snapshot) => {
+    //             snapshot.forEach((childSnapshot) => {
+    //                 setImage((pre) => [...pre, childSnapshot.val()]);
+    //                 //console.log(ProductDetail);
+    //             }).then(() => {
+    //                 Image.forEach((element) => {
+    //                     if(element.product_ID == props.data.ID)
+    //                     ListImage.push(element.image_Url);
+    //                 })
+    //             }) 
+    //         },
+    //         {
+    //             onlyOnce: true,
+    //         }
+    //     );
+    // }, []);
+
+    //const productImage = ref(storage, 'gs://mobile-550f2.appspot.com/4_zu_3_gz700_1.png')
+
   return (
     <View style={styles.product}>
             <View style={StyleSheet.absoluteFill} >
                     <Svg height={111} width={175}> 
                     <Image 
-                        onPress={() => navigation.navigate('Product_detail')}
+                        onPress={() => navigation.navigate('Product_detail', {
+                            paramKey: props.data,
+                        })}
                         href={require('../image/rog_lap.jpg')} 
+                        
+                        //source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/mobile-550f2.appspot.com/o/4_zu_3_gz700_1.png?alt=media&token=6bab32e1-0b98-413f-ab46-10a035cf6547' }}
                         height={111} 
                         width={175}
                         resizeMode={'xMidYMid slice'}/>
@@ -53,7 +93,7 @@ const product = () => {
                 </Svg>
                 </View>
             </View>
-            <Text style={styles.Pro_name}>ROG Mothership GZ700</Text>
+          <Text style={styles.Pro_name}>{props.data.name}</Text>
             <View style={styles.star}>
                 <Icon name="star" size={15} color={color.yellow} />
                 <Icon name="star" size={15} color={color.yellow} marginLeft={3}/>
@@ -61,8 +101,8 @@ const product = () => {
                 <Icon name="star" size={15} color={color.yellow} marginLeft={3}/>
                 <Icon name="star-o" size={15} color={color.yellow} marginLeft={3}/>
             </View>
-            <View flexDirection='row' marginTop={5} marginHorizontal={8}>
-                <Text style={styles.price}>$10000</Text>
+            <View flexDirection='row' marginTop={5} marginHorizontal={8}> 
+                <Text style={styles.price}>${props.data.price}</Text>
                 <Text style={styles.price_sale}>$5000</Text>
             </View>
             <View style={StyleSheet.absoluteFill} marginLeft={142} marginTop={160}>

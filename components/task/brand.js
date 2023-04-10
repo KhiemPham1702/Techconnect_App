@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet,Image } from 'react-native';
 import React from 'react'
-import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect , useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -27,16 +26,11 @@ const brand = () => {
     };
   return (
     <View style={styles.brand}>
-                    <View style={StyleSheet.absoluteFill}>
-                        <Svg height={50} width={80}  >
-                        <Image 
-                            href={require('../image/apple.png')} 
-                            height={50} 
-                            width={80}
-                            />
-                        </Svg>
-                    </View>
-                </View>
+          <Image
+              source={require('../image/apple.png')}
+              style={styles.Image}
+          />
+    </View>
   )
 }
 
@@ -50,4 +44,10 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         backgroundColor: color.white,
     },
+    Image: {
+        height: '100%',
+        width: '100%',
+        resizeMode: 'center',
+        borderRadius: 0,
+    }
 })

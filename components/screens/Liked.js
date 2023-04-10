@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
+
 import color from '../../contains/color';
 import Product from '../task/product';
 
@@ -51,7 +52,6 @@ export default function Liked() {
     const [catergoryIndex, setCategoryIndex] = useState(0);
     const categories = ['Related', 'Newest', 'Best Seller', 'Price'];
 
-    const { height, width } = Dimensions.get("window");
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),

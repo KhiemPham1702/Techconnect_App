@@ -14,10 +14,42 @@ import Product_review from '../task/product_review';
 import Brand from '../task/brand';
 import Product from '../task/product';
 
+
+import { db, ref, set, child, get, onValue } from '../DAL/Database'
+
+export const Data_source = [];
+
 export default function Home() {
+
+
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     const navigation = useNavigation();
-    const DATA = [
+
+    const [DATA, setDATA] = useState(Data_source);
+
+    useEffect(() => {
+        // Update the document title using the browser API
+        const starCountRef = ref(db, "Product/");
+        setDATA([]);
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    setDATA((pre) => [...pre, childSnapshot.val()]);
+                    
+                });
+            },
+            {
+                onlyOnce: true,
+            }
+        );
+    },[]);
+
+    const renderItem2 = () => {
+        return <Product_review />;
+    };
+
+    const DATA5 = [
         {
           id: '1',
           title: 'Item 1',
@@ -30,19 +62,34 @@ export default function Home() {
           id: '3',
           title: 'Item 3',
         },
-        {
-            id: '4',
-            title: 'Item 1',
-          },
-          {
-            id: '5',
-            title: 'Item 2',
-          },
-          {
-            id: '6',
-            title: 'Item 3',
-          },
       ];
+
+    // const DATA = [
+    //     {
+    //       id: '1',
+    //       title: 'Item 1',
+    //     },
+    //     {
+    //       id: '2',
+    //       title: 'Item 2',
+    //     },
+    //     {
+    //       id: '3',
+    //       title: 'Item 3',
+    //     },
+    //     {
+    //         id: '4',
+    //         title: 'Item 1',
+    //       },
+    //       {
+    //         id: '5',
+    //         title: 'Item 2',
+    //     },
+    //     {
+    //         id: '6',
+    //         title: 'Item 3',
+    //     },
+    //   ];
     const { height, width } = Dimensions.get("window");
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -61,9 +108,9 @@ export default function Home() {
     } else {
         SplashScreen.hideAsync();
     };
-    const renderItem = () => {
-        return <Product/>;
-      };
+    // const renderItem = ({ item }) => {
+    //     return <product item={item}/>;
+    //   };
   return (
     <View style={styles.container}>
       <View style={StyleSheet.absoluteFill} marginLeft={15} marginTop={30} >
@@ -102,11 +149,13 @@ export default function Home() {
       <ScrollView marginTop={20}>
         <Text style={styles.textTop}>Discover Your Best</Text>
         <View marginTop={27}>
-            <ScrollView horizontal>
-                <Product_review/>
-                <Product_review/>
-                <Product_review/>
-            </ScrollView>
+                  <FlatList
+                  pagingEnabled
+                    horizontal
+                    showsVerticalScrollIndicator={false}
+                    data={DATA5}
+                    renderItem={renderItem2}>
+                  </FlatList>
         </View>
         <View style={styles.Choose}>
             <View>
@@ -188,7 +237,7 @@ export default function Home() {
             showsVerticalScrollIndicator={false}
             numColumns={2}
             data={DATA}              
-            renderItem={renderItem}>
+            renderItem={({ item }) => <Product data={item} />}>
         </FlatList>   
       </ScrollView>
       
@@ -200,6 +249,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: color.background,
+    },
+    container2: {
+        paddingHorizontal: 17,
     },
     searchtext: {
         flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -24,8 +24,8 @@ import Histoty from './components/screens/History';
 import Tab_navigation from './components/navigation/Tab_navigation';
 
 const App = () => {
-  const Stack = createNativeStackNavigator();
 
+  const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
       <Stack.Navigator

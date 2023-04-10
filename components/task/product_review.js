@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import React from 'react'
-import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect , useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -26,19 +25,16 @@ const product_review = () => {
         SplashScreen.hideAsync();
     };
   return (
-    <View style={styles.product_Re}>
-                <View style={StyleSheet.absoluteFill}>
-                    <Svg height={154} width={295}  >
-                    <Image 
-                        href={require('../image/4_zu_3_gz700_1.png')} 
-                        height={154} 
-                        width={295}
-                        preserveAspectRatio="xMidYMid slice"/>
-                    </Svg>
-                </View>
-                <View style={styles.overlay} />   
-                <Text style={styles.product_Re_text}>Premium Gaming Laptop</Text>
-        </View>
+      <View marginLeft={15}>
+          <ImageBackground
+              styles={styles.product_Re}
+              source={require('../image/4_zu_3_gz700_1.png')} >
+              <View height={154} width={295}>
+                  <View style={styles.overlay} />
+                  <Text style={styles.product_Re_text}>Premium Gaming Laptop</Text>
+              </View>
+          </ImageBackground>
+      </View>
   )
 }
 
@@ -49,9 +45,7 @@ const styles = StyleSheet.create({
         height: 154,
         width: 295,
         borderRadius: 15,
-        backgroundColor: color.grey_text,
-        marginLeft: 18,
-
+        resizeMode: 'cover',
     },
     product_Re_text: {
         color: color.white,
@@ -67,5 +61,7 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.25)',
+        borderRadius: 15,
     },
+    
 })

@@ -1,13 +1,17 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
+
+
 export default function Start() {
+
+
   const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
@@ -15,6 +19,7 @@ export default function Start() {
     Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
   });
   useEffect(() => {
+
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }

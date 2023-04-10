@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, FlatList, TouchableOpacity, ImageBackground, Animated } from 'react-native';
-import Svg, { Image } from "react-native-svg";
+import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, FlatList, TouchableOpacity, ImageBackground, Animated, Image } from 'react-native';
+import Svg, { Image2 } from "react-native-svg";
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -13,9 +13,12 @@ import color from '../../contains/color';
 import Comment from '../task/comment';
 import Product from '../task/product';
 
+import { db, ref, set, child, get, onValue } from '../DAL/Database'
+
 const { width } = Dimensions.get('window');
 
-export default function Product_detail() {
+
+export default function Product_detail({ route }) {
     const [isVisible, setIsVisible] = useState(false);
     const [count, setCount] = useState(1);
     const onPress = () => setCount(prevCount => prevCount + 1);
@@ -24,30 +27,79 @@ export default function Product_detail() {
     const navigation = useNavigation();
     const slideUp = () => {
         Animated.timing(slideAnimation, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
         }).start();
-      };
-      const sliceDown = () => {
+    };
+    const sliceDown = () => {
         Animated.timing(slideAnimation, {
-          toValue: 1000,
-          duration: 500,
-          useNativeDriver: true,
+            toValue: 1000,
+            duration: 500,
+            useNativeDriver: true,
         }).start(() => setIsVisible(false));
-      };
-    const DATA = [
-        { id: "1", title: "Trademark" },
-        { id: "2", title: "Guarantee" },
-        { id: "3", title: "Series/Model" },
-        { id: "4", title: "Color" },
-        { id: "5", title: "Headphone type" },
-        { id: "6", title: "Connection type" },
-        { id: "7", title: "Connection standard" },
-        { id: "8", title: "Microphone" },
-        { id: "9", title: "Impedance" },
-        { id: "10", title: "Frequency" },
-      ];
+    };
+
+    const [ProductDetail, setProductDetail] = useState([]);
+    
+
+
+    useEffect(() => {
+        // Update the document title using the browser API
+        const starCountRef = ref(db, "Laptop/" + route.params.paramKey.ID);
+        setProductDetail([]);
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    setProductDetail((pre) => [...pre, childSnapshot.val()]);
+                    //console.log(ProductDetail);
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        );
+    }, []);
+
+
+
+    const DATA = [[//lap
+        { id: "1", title: "CPU" },
+        { id: "2", title: "Graphic Card" },
+        { id: "3", title: "RAM" },
+        { id: "4", title: "Storage Drive" },
+        { id: "5", title: "Screen" },
+        { id: "6", title: "OS" },
+        { id: "7", title: "Lan" },
+        { id: "8", title: "Communication Port" },
+        { id: "9", title: "Keyboard" },
+        { id: "10", title: "Battery" },
+    ], 
+    [//headphone
+        { id: "1", title: "Type" },
+        { id: "2", title: "Connection Type" },
+        { id: "3", title: "Connection Standard" },
+        { id: "4", title: "Microphone" },
+        { id: "5", title: "Impedance" },
+        { id: "6", title: "Frequency" },
+    ],
+    [//keyboard
+        { id: "1", title: "Type" },
+        { id: "2", title: "Led" },
+    ],
+    [//mouse
+        { id: "1", title: "Type" },
+        { id: "2", title: "Connection Type" },
+        { id: "3", title: "Connection Standard" },
+        { id: "4", title: "Microphone" },
+        { id: "5", title: "Impedance" },
+        { id: "6", title: "Frequency" },
+    ],
+    [//gamepad
+        { id: "1", title: "Type" },
+    ],
+    ];
     const DATA2 = [
         { id: "1", title: "Logitech" },
         { id: "2", title: "24 months" },
@@ -62,52 +114,52 @@ export default function Product_detail() {
     ];
     const DATA3 = [
         {
-          id: '1',
-          title: 'Item 1',
+            id: '1',
+            title: 'Item 1',
         },
         {
-          id: '2',
-          title: 'Item 2',
+            id: '2',
+            title: 'Item 2',
         },
         {
-          id: '3',
-          title: 'Item 3',
+            id: '3',
+            title: 'Item 3',
         },
         {
             id: '4',
             title: 'Item 1',
-          },
-          {
+        },
+        {
             id: '5',
             title: 'Item 2',
-          },
-          {
+        },
+        {
             id: '6',
             title: 'Item 3',
-          },
-          {
+        },
+        {
             id: '4',
             title: 'Item 1',
-          },
-          {
+        },
+        {
             id: '5',
             title: 'Item 2',
-          },
-          {
+        },
+        {
             id: '6',
             title: 'Item 3',
-          },
-      ];
+        },
+    ];
     const DATA4 = [
         {
-          id: '1',
-          title: 'White',
+            id: '1',
+            title: 'White',
         },
         {
-          id: '2',
-          title: 'Black',
+            id: '2',
+            title: 'Black',
         },
-      ];
+    ];
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -115,7 +167,7 @@ export default function Product_detail() {
     });
     useEffect(() => {
         async function prepare() {
-        await SplashScreen.preventAutoHideAsync();
+            await SplashScreen.preventAutoHideAsync();
         }
         prepare();
     }, []);
@@ -127,15 +179,15 @@ export default function Product_detail() {
     };
 
     const renderProduct = () => {
-        return <Product />;
+        //return <Product />;
     };
 
     const Item = ({ title }) => {
-        return <Text style={styles.specifications}>{ title }</Text>;
+        return <Text style={styles.specifications}>{title}</Text>;
     };
 
     const Item2 = ({ title }) => {
-        return <Text style={styles.specifications2}>{ title }</Text>;
+        return <Text style={styles.specifications2}>{title}</Text>;
     };
 
     const renderItem = ({ item }) => <Item title={item.title} />;
@@ -144,83 +196,69 @@ export default function Product_detail() {
     const Buyer_image = () => {
         return (
             <View style={styles.buyer_image}>
-                <View style={StyleSheet.absoluteFill}>
-                    <Svg height={75} width={81}> 
-                    <Image 
-                        href={require('../image/user1.jpg')} 
-                        height={75} 
-                        width={81}
-                        resizeMode={'xMidYMid slice'}/>
-                    </Svg>
-                </View>
-        </View>
+                <Image
+                    source={require('../image/user1.jpg')}
+                    style={styles.Buyer_image}
+                    />
+            </View>
         )
     };
 
     const Product_image = () => {
         return (
             <View style={styles.imageView}>
-                <View style={StyleSheet.absoluteFill} borderRadius={30}>
-                    <Svg height={303} width={375}>
-                    <Image 
-                        href={require('../image/3.png')} 
-                        height={303} 
-                        width={375}
-                        />
-                    </Svg>
-                </View> 
+                <Image
+                style={styles.img}
+                    // source={require('../image/3.png')}
+                    source={{ uri: 'https://reactnative.dev/img/tiny_logo.png?fbclid=IwAR1EhF8DfYpEoBdAqNen17pOnhlVWzksrLWoXFXto8oHuLgpwZwvnrjxPI4' }}
+                />
             </View>
         )
     };
-    return(
+    return (
         <View style={styles.container}>
             <View>
-                <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
-                    <Svg height={40} width={40}  >
-                    <Image 
-                        onPress={() => navigation.goBack()}
-                        href={require('../image/icon_back_white.png')} 
-                        height={40} 
-                        width={40}
-                        preserveAspectRatio="xMidYMid slice"/>
-                    </Svg>
-                </View> 
-                <Icon2 name='dots-three-vertical' size={30} color={color.white} marginTop={40} marginLeft={352}></Icon2>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <View height={40} width={40} marginLeft={14} marginTop={30}>
+                        <Image
+                            source={require('../image/icon_back_white.png')}
+                            height={40}
+                            width={40} />
+                    </View>
+                </TouchableOpacity>
+                <Icon2 name='dots-three-vertical' size={30} color={color.white} marginTop={-30} marginLeft={352}></Icon2>
                 <View marginTop={14}>
                     <ScrollView horizontal pagingEnabled>
-                        <Product_image/>
-                        <Product_image/>
-                        <Product_image/>
+                        <Product_image />
+                        <Product_image />
+                        <Product_image />
                     </ScrollView>
                 </View>
                 <View style={styles.Detail}>
                     <ScrollView>
                         <View flexDirection='row'>
-                            <Text style={styles.product_name}>Logitech G733 LIGHTSPEED Wireless</Text>
-                            <View style={StyleSheet.absoluteFill} marginLeft={289}>
-                                <Svg height={69} width={49}> 
-                                    <Image 
-                                        href={require('../image/OFF2.png')} 
-                                        height={69} 
-                                        width={49}
-                                        resizeMode={'xMidYMid slice'}/>
-                                    <Text style={styles.off_text}>25%</Text>
-                                </Svg>
+                            <Text style={styles.product_name} numberOfLines={2}>{route.params.paramKey.name}</Text>
+                            <View height={69} width={49} marginLeft={10}>
+                                <Image
+                                    source={require('../image/OFF2.png')}
+                                    height={'100%'}
+                                    width={'100%'} />
+                                <Text style={styles.off_text}>25%</Text>
                             </View>
                         </View>
-                        <View style={styles.star} marginTop={11}>
+                        <View style={styles.star} marginTop={10}>
                             <Icon name="star" size={20} color={color.yellow_2} />
-                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5}/>
-                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5}/>
-                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5}/>
-                            <Icon name="star-o" size={20} color={color.yellow_2} marginLeft={5}/>
-                            <Text style={styles.review}>(250 Reviews)</Text>                       
+                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
+                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
+                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
+                            <Icon name="star-o" size={20} color={color.yellow_2} marginLeft={5} />
+                            <Text style={styles.review}>(250 Reviews)</Text>
                         </View>
-                        <View flexDirection='row' marginTop={5}> 
-                            <Text style={styles.price}>$10000</Text>
+                        <View flexDirection='row' marginTop={5}>
+                            <Text style={styles.price}>${route.params.paramKey.price}</Text>
                             <Text style={styles.price_sale}>$5000</Text>
-                            <Icon name='heart-o' size={28} color={color.white} marginLeft={130} marginTop={3}/>
-                            <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10}/>
+                            <Icon name='heart-o' size={28} color={color.white} marginLeft={130} marginTop={3} />
+                            <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10} />
                         </View>
                         <View style={styles.line} />
                         <Text style={styles.section}>Technical parameters</Text>
@@ -228,46 +266,46 @@ export default function Product_detail() {
                             <View>
                                 <FlatList
                                     nestedScrollEnabled={true}
-                                    data={DATA}
+                                    data={DATA[0]}
                                     renderItem={renderItem}
-                                    keyExtractor={(item) => item.id}/>
+                                    keyExtractor={(item) => item.id} />
                             </View>
-                            <View marginLeft={35}>
+                            <View marginLeft={15}>
                                 <FlatList
                                     nestedScrollEnabled={true}
-                                        data={DATA2}
-                                        renderItem={renderItem2}
-                                        keyExtractor={(item) => item.id}/>
+                                    data={ProductDetail}
+                                    renderItem={({ item }) => <Item2 title={item}/>} />
+                                    {/*keyExtractor={(item) => item.id} />*/}
                             </View>
                         </View>
                         <View style={styles.line} />
                         <Text style={styles.section}>Describe</Text>
-                        <Text style={styles.specifications} paddingHorizontal={15}>Logitech G733 LIGHTSPEED Wireless White line of computer headsets is designed with gamers in mind. These are wireless headphones packed with the stereophonic sound, sound filters, and advanced lighting features you need to look, speak, and play in style like never before.</Text>
+                        <Text style={styles.specifications} paddingHorizontal={15}>{route.params.paramKey.description}</Text>
                         <View style={styles.line} />
                         <Text style={styles.section}>Product Reviews</Text>
                         <View flexDirection='row'>
                             <Text style={styles.score}>4.0</Text>
                             <View style={styles.star} marginTop={20} marginLeft={10}>
                                 <Icon name="star" size={20} color={color.yellow_2} />
-                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5}/>
-                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5}/>
-                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5}/>
-                                <Icon name="star-o" size={20} color={color.yellow_2} marginLeft={5}/>                      
-                                <Text style={styles.review}>(250 Reviews)</Text> 
+                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
+                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
+                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
+                                <Icon name="star-o" size={20} color={color.yellow_2} marginLeft={5} />
+                                <Text style={styles.review}>(250 Reviews)</Text>
                             </View>
                         </View>
                         <Text style={styles.section2}>Pictures from buyers</Text>
                         <ScrollView horizontal>
-                            <Buyer_image/>
-                            <Buyer_image/>
-                            <Buyer_image/>
-                            <Buyer_image/>
-                            <Buyer_image/>
-                            <Buyer_image/>
+                            <Buyer_image />
+                            <Buyer_image />
+                            <Buyer_image />
+                            <Buyer_image />
+                            <Buyer_image />
+                            <Buyer_image />
                         </ScrollView>
                         <ScrollView horizontal pagingEnabled>
-                            <Comment/>
-                            <Comment/>
+                            <Comment />
+                            <Comment />
                         </ScrollView>
                         <View style={styles.line} />
                         <Text style={styles.section}>Similar products</Text>
@@ -280,23 +318,23 @@ export default function Product_detail() {
                         </FlatList>
                     </ScrollView>
                     <View style={styles.bottom_view}>
-                        <View flexDirection='row' marginTop={15}>
-                            <Svg height={40} width={215} marginLeft={20}>
-                            <Image 
-                                onPress={slideUp}
-                                href={require('../image/btAddtoCart.png')} 
-                                height={40} 
-                                width={215}
-                                preserveAspectRatio="xMidYMid slice"/>
-                            </Svg>
-                            <Svg height={40} width={215} marginLeft={-60}>
-                            <Image 
-                                onPress={slideUp}
-                                href={require('../image/btBuyNow.png')} 
-                                height={40} 
-                                width={215}
-                                preserveAspectRatio="xMidYMid slice"/>
-                            </Svg>
+                        <View flexDirection='row' height={40} width={215} marginTop={13}>
+                            <TouchableOpacity onPress={slideUp}>
+                                <View height={40} width={215} marginLeft={15}>
+                                    <Image                                       
+                                        source={require('../image/btAddtoCart.png')}
+                                        height={40}
+                                        width={215} />
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={slideUp}>
+                                <View height={40} width={215} marginLeft={-60}>
+                                    <Image
+                                        source={require('../image/btBuyNow.png')}
+                                        height={40}
+                                        width={215} />
+                                </View>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -305,31 +343,31 @@ export default function Product_detail() {
                         position: 'absolute',
                         bottom: 0,
                         width: '100%',
-                        height: '40%',
+                        height: '50%',
                         borderTopLeftRadius: 30,
                         borderTopRightRadius: 30,
                         backgroundColor: 'white',
-                        transform: [{ translateY: slideAnimation }],}}>
+                        transform: [{ translateY: slideAnimation }],
+                    }}>
                     <View flexDirection='row' marginLeft={20} marginTop={20}>
-                        <View  style={styles.avatar_view3}>
-                            <Svg height={80} width={80}>
-                                <Image 
+                        <View style={styles.avatar_view3}>
+                            <View height={80} width={80}>
+                                <Image
                                     onPress={slideUp}
-                                    href={require('../image/3.png')} 
-                                    height={80} 
-                                    width={80}
-                                    preserveAspectRatio="xMidYMid slice"/>
-                                </Svg>             
+                                    source={require('../image/3.png')}
+                                    height={80}
+                                    width={80}/>
                             </View>
-                            <View marginTop={5} marginLeft={10}>
-                                <Text style={styles.pro_name}>Logitech G733 LIGHTSPEED Wireless</Text>
-                                <Text style={styles.pro_color}>$299</Text>
-                            </View>
-                            <TouchableOpacity onPress={sliceDown}>
-                                <Icon4 name='window-close' size={30} color={'black'} marginLeft={60}/>
-                            </TouchableOpacity>
+                        </View>
+                        <View marginTop={5} marginLeft={10}>
+                            <Text style={styles.pro_name}>Logitech G733 LIGHTSPEED Wireless</Text>
+                            <Text style={styles.pro_color}>$299</Text>
+                        </View>
+                        <TouchableOpacity onPress={sliceDown}>
+                            <Icon4 name='window-close' size={30} color={'black'} marginLeft={60} />
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.line2}/>
+                    <View style={styles.line2} />
                     <Text style={styles.component} marginLeft={20}>Color</Text>
                     <FlatList
                         marginLeft={20}
@@ -338,47 +376,58 @@ export default function Product_detail() {
                         data={DATA4}
                         nestedScrollEnabled={true}
                         renderItem={({ item }) => (
-                        <View style={styles.view_buttom}>
-                            <Text style={styles.view_text_buttom}>{item.title}</Text>
-                        </View>
-                    )}>
+                            <View style={styles.view_buttom}>
+                                <Text style={styles.view_text_buttom}>{item.title}</Text>
+                            </View>
+                        )}>
                     </FlatList>
-                    <View flexDirection='row'>
-                        <Text style={styles.component} marginLeft={20}>Quantity</Text>
-                        <View style={styles.add}>
-                            <TouchableOpacity onPress={onPress2}>
-                                <Text style={styles.minus} marginLeft={15} marginTop={-4}>-</Text>
-                            </TouchableOpacity>
-                            <Text style={styles.minus} marginLeft={20} marginTop={-3.5}>{count}</Text>
-                            <TouchableOpacity onPress={onPress}>
-                                <Text style={styles.minus} marginTop={-4} marginLeft={18}>+</Text>
-                            </TouchableOpacity>
+                    <View marginBottom={30}>
+                        <View flexDirection='row'>
+                            <Text style={styles.component} marginLeft={20}>Quantity</Text>
+                            <View style={styles.add}>
+                                <TouchableOpacity onPress={onPress2}>
+                                    <Text style={styles.minus} marginLeft={15} marginTop={-4}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.minus} marginLeft={20} marginTop={-3.5}>{count}</Text>
+                                <TouchableOpacity onPress={onPress}>
+                                    <Text style={styles.minus} marginTop={-4} marginLeft={18}>+</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
+                        <TouchableOpacity>
+                            <View style={styles.button2}>
+                                <Text style={styles.buttonText2}>Buy Now</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity >
-                    <View style={styles.button2}>
-                        <Text style={styles.buttonText2}>Buy Now</Text>
-                    </View>
-                </TouchableOpacity>
                 </Animated.View>
-            </View> 
-                       
+            </View>
+
         </View>
-        
+
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: color.background,
+        flex: 1,
+        backgroundColor: color.background,
     },
     imageView: {
         borderRadius: 30,
-        height: 303,
+        height: 353,
         width: 375,
         marginHorizontal: 18,
         marginTop: 14,
+    },
+    img: {
+        height: '100%',
+        width: '100%',
+        resizeMode: 'cover',
+    },
+    product_image: {
+        height: 200,
+        width: 200,
     },
     Detail: {
         marginTop: 35,
@@ -421,7 +470,7 @@ const styles = StyleSheet.create({
     },
     off_text: {
         marginLeft: 10,
-        marginTop: 7,
+        marginTop: -63,
         fontFamily: 'Inter_SemiBold',
         fontSize: 15,
         color: color.white,
@@ -455,7 +504,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter_Medium',
         fontSize: 14,
         color: color.white,
-        marginTop: 10,
+        marginTop: 20,
         textAlign: 'justify',
     },
     specifications2: {
@@ -472,24 +521,31 @@ const styles = StyleSheet.create({
     component: {
         fontFamily: 'Inter_Medium',
         fontSize: 18,
-      },
+    },
     buyer_image: {
-        height:75,
+        height: 75,
         width: 81,
         marginRight: 15,
         marginTop: 10,
-        backgroundColor: color.white,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: color.white,
+    },
+    Buyer_image:{
+        height: '100%',
+        width: '100%',
+        resizeMode: 'cover',
         borderRadius: 10,
     },
     bottom_View: {
-        position: 'absolute', 
-        bottom: 0, 
-        height: 100, 
+        position: 'absolute',
+        bottom: 0,
+        height: 100,
         backgroundColor: 'red'
     },
     bottom_view: {
         backgroundColor: color.white,
-        height: 70,
+        height: 110,
         flexDirection: 'row',
         marginHorizontal: -20,
     },
@@ -499,7 +555,7 @@ const styles = StyleSheet.create({
         marginTop: 7,
         borderRadius: 5,
         overflow: 'hidden',
-        backgroundColor: color.grey_text,       
+        backgroundColor: color.grey_text,
     },
     image3: {
         width: '100%',
@@ -527,16 +583,16 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
-  
+
         marginRight: 20,
         marginTop: 10,
-      },
-      view_text_buttom: {
+    },
+    view_text_buttom: {
         fontFamily: 'Inter_Medium',
         fontSize: 14,
         color: color.grey_A0,
-      },
-      add: {
+    },
+    add: {
         backgroundColor: color.red,
         width: 110,
         height: 30,
@@ -560,12 +616,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginLeft: 35,
         marginBottom: 30,
-      },
-      buttonText2: {
+    },
+    buttonText2: {
         fontStyle: 'normal',
         fontSize: 22,
         color: 'white',
         letterSpacing: 1,
         fontFamily: 'Inter_SemiBold',
-      },
-  });
+    },
+});
