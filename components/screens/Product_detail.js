@@ -40,28 +40,149 @@ export default function Product_detail({ route }) {
         }).start(() => setIsVisible(false));
     };
 
-    const [ProductDetail, setProductDetail] = useState([]);
-    
 
+
+    const TypeProduct = {
+        Laptop: 0,
+        Headphone: 1,
+        Keyboard: 2,
+        Mouse: 3,
+        Gamepad: 4,
+    }
+
+
+    const [ProductDetail, setProductDetail] = useState([]);
+    const [Field, setField] = useState([]);
+    const [Type, setType] = useState();
 
     useEffect(() => {
-        // Update the document title using the browser API
-        const starCountRef = ref(db, "Laptop/" + route.params.paramKey.ID);
+
+        //laptop
+        let starCountRef = ref(db, "Laptop/");
         setProductDetail([]);
+        setField([]);
         onValue(
             starCountRef,
             (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
-                    setProductDetail((pre) => [...pre, childSnapshot.val()]);
-                    //console.log(ProductDetail);
+                    let da = childSnapshot.val();
+                    if(da && da['product_ID'] == route.params.paramKey.ID)
+                    {   
+                        console.log(1);
+                        delete da['product_ID']
+                        //console.log(da);
+                        //const i = da.indexOf('product_ID');
+                        //da = da.splice(i, 1);
+                        setProductDetail((pre) => [...pre, Object.values(da)])
+                        setField((pre) => [...pre, Object.keys(da)])
+                        console.log(1); 
+                    }
                 })
             },
             {
                 onlyOnce: true,
             }
-        );
-    }, []);
+        )
+        
+        //headphone
+        starCountRef = ref(db, "headphone/");
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    if (da && da['product_ID'] == route.params.paramKey.ID) {
+                        console.log(2);
+                        delete da['product_ID']
+                        //console.log(da);
+                        //const i = da.indexOf('product_ID');
+                        //da = da.splice(i, 1);
+                        setProductDetail((pre) => [...pre, Object.values(da)])
+                        setField((pre) => [...pre, Object.keys(da)])
+                        console.log(1);
+                    }
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
 
+        //keyboard
+        starCountRef = ref(db, "Keyboard/");
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    if (da && da['product_ID'] == route.params.paramKey.ID) {
+                        console.log(2);
+                        delete da['product_ID']
+                        //console.log(da);
+                        //const i = da.indexOf('product_ID');
+                        //da = da.splice(i, 1);
+                        setProductDetail((pre) => [...pre, Object.values(da)])
+                        setField((pre) => [...pre, Object.keys(da)])
+                        console.log(1);
+                    }
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+
+        //mouse
+        starCountRef = ref(db, "Mouse/");
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    if (da && da['product_ID'] == route.params.paramKey.ID) {
+                        console.log(2);
+                        delete da['product_ID']
+                        //console.log(da);
+                        //const i = da.indexOf('product_ID');
+                        //da = da.splice(i, 1);
+                        setProductDetail((pre) => [...pre, Object.values(da)])
+                        setField((pre) => [...pre, Object.keys(da)])
+                        console.log(1);
+                    }
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+
+        //gamepad
+        starCountRef = ref(db, "Gamepad/");
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    if (da && da['product_ID'] == route.params.paramKey.ID) {
+                        console.log(2);
+                        delete da['product_ID']
+                        //console.log(da);
+                        //const i = da.indexOf('product_ID');
+                        //da = da.splice(i, 1);
+                        setProductDetail((pre) => [...pre, Object.values(da)])
+                        setField((pre) => [...pre, Object.keys(da)])
+                        console.log(1);
+                    }
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+
+        return () => { }
+
+    }, [])
 
 
     const DATA = [[//lap
@@ -83,7 +204,7 @@ export default function Product_detail({ route }) {
         { id: "4", title: "Microphone" },
         { id: "5", title: "Impedance" },
         { id: "6", title: "Frequency" },
-    ],
+    ], 
     [//keyboard
         { id: "1", title: "Type" },
         { id: "2", title: "Led" },
@@ -199,18 +320,20 @@ export default function Product_detail({ route }) {
                 <Image
                     source={require('../image/user1.jpg')}
                     style={styles.Buyer_image}
-                    />
+                />
             </View>
         )
     };
 
-    const Product_image = () => {
+    const Product_image = ({ item }) => {
+        //const item = 'https://reactnative.dev/img/tiny_logo.png?fbclid=IwAR1EhF8DfYpEoBdAqNen17pOnhlVWzksrLWoXFXto8oHuLgpwZwvnrjxPI4'
         return (
             <View style={styles.imageView}>
                 <Image
-                style={styles.img}
+                    style={styles.img}
                     // source={require('../image/3.png')}
-                    source={{ uri: 'https://reactnative.dev/img/tiny_logo.png?fbclid=IwAR1EhF8DfYpEoBdAqNen17pOnhlVWzksrLWoXFXto8oHuLgpwZwvnrjxPI4' }}
+                    //source={{ uri: 'https://reactnative.dev/img/tiny_logo.png?fbclid=IwAR1EhF8DfYpEoBdAqNen17pOnhlVWzksrLWoXFXto8oHuLgpwZwvnrjxPI4' }}
+                    source={{ uri: item }}
                 />
             </View>
         )
@@ -229,9 +352,15 @@ export default function Product_detail({ route }) {
                 <Icon2 name='dots-three-vertical' size={30} color={color.white} marginTop={-30} marginLeft={352}></Icon2>
                 <View marginTop={14}>
                     <ScrollView horizontal pagingEnabled>
-                        <Product_image />
-                        <Product_image />
-                        <Product_image />
+                        {
+                            route.params.listImage.map((image) => (
+
+                                <Product_image item={image} />
+
+                            ))
+                        }
+                        {/* <Product_image />
+                        <Product_image /> */}
                     </ScrollView>
                 </View>
                 <View style={styles.Detail}>
@@ -266,16 +395,18 @@ export default function Product_detail({ route }) {
                             <View>
                                 <FlatList
                                     nestedScrollEnabled={true}
-                                    data={DATA[0]}
-                                    renderItem={renderItem}
-                                    keyExtractor={(item) => item.id} />
+                                    //data={DATA[Type]}
+                                    data={Field.at(0)}
+                                    renderItem={({ item }) => <Item title={item} />} />
+                                {/* // keyExtractor={(item) => item.id} /> */}
                             </View>
                             <View marginLeft={15}>
                                 <FlatList
                                     nestedScrollEnabled={true}
-                                    data={ProductDetail}
-                                    renderItem={({ item }) => <Item2 title={item}/>} />
-                                    {/*keyExtractor={(item) => item.id} />*/}
+                                    data={ProductDetail.at(0)}
+                                    renderItem={({ item }) => <Item2 title={item} />} />
+                                {/* keyExtractor={(item) => item.id} /> */}
+
                             </View>
                         </View>
                         <View style={styles.line} />
@@ -321,7 +452,7 @@ export default function Product_detail({ route }) {
                         <View flexDirection='row' height={40} width={215} marginTop={13}>
                             <TouchableOpacity onPress={slideUp}>
                                 <View height={40} width={215} marginLeft={15}>
-                                    <Image                                       
+                                    <Image
                                         source={require('../image/btAddtoCart.png')}
                                         height={40}
                                         width={215} />
@@ -356,7 +487,7 @@ export default function Product_detail({ route }) {
                                     onPress={slideUp}
                                     source={require('../image/3.png')}
                                     height={80}
-                                    width={80}/>
+                                    width={80} />
                             </View>
                         </View>
                         <View marginTop={5} marginLeft={10}>
@@ -531,7 +662,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: color.white,
     },
-    Buyer_image:{
+    Buyer_image: {
         height: '100%',
         width: '100%',
         resizeMode: 'cover',

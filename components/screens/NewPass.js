@@ -80,7 +80,7 @@ export default function NewPass() {
       </View>
       <View style={styles.button}>
           <Text style={styles.buttonText}
-            onPress={() => navigation.navigate('Home')}>RESET PASS</Text>
+            onPress={() => navigation.navigate('Tab_navigation')}>RESET PASS</Text>
       </View>
     </View>
   );

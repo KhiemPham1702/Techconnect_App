@@ -7,8 +7,94 @@ import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
+import { db, ref, set, child, get, onValue } from '../DAL/Database'
+import { User, reload } from '../screens/Login'
+
 
 export default function Edit_profile() {
+    const [first_Name, setfirst_Name] = useState(User.first_Name)
+    const [last_Name, setlast_Name] = useState(User.last_Name)
+    //const [Email, setEmail] = useState(User.email)
+    const [Phone, setPhone] = useState(User.phone)
+    const [AddressObj, setAddressObj] = useState([])
+    const [Address, setAddress] = useState(() => {
+        starCountRef = ref(db, "Address/");
+        let a;
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                setAddressObj([])
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    a = childSnapshot.val().address
+                    if (da && da['user_ID'] == User.ID) {
+                        setAddressObj((pre) => [...pre, da])
+                        console.log(a);
+                    }
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+
+        return a;
+    })
+
+    useEffect(() => {
+        starCountRef = ref(db, "Address/");  
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                setAddressObj([])
+                snapshot.forEach((childSnapshot) => { 
+                    let da = childSnapshot.val();
+                    const a = childSnapshot.val().address
+                    if (da && da['user_ID'] == User.ID) { 
+                        setAddressObj((pre) => [...pre, da]) 
+
+                        //setAddress((pre) => [...pre, a]) 
+                        //console.log(a);
+                    } 
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+    }, []);
+
+    function ChangeInformation(){
+        console.log(User.Information)
+        
+        set(ref(db, 'App_user/' + User.ID), {
+            ID: User.ID,
+            avatar: User.avatar,
+            email: User.email,
+            enabled: User.enabled,
+            first_Name: first_Name,
+            last_Name: last_Name,
+            password: User.password,
+            phone: Phone,
+            reset_password_token: User.reset_password_token,
+        }).catch((error) => {
+            console.error(error);
+        });
+
+        set(ref(db, 'Address/' + AddressObj != null ? AddressObj.id : User.ID), {
+            id: AddressObj != null ? AddressObj.id : User.ID,
+            user_ID: User.ID, 
+            address: Address,
+        }).catch((error) => {
+            console.error(error);
+        });
+
+        reload(User.ID)
+
+        console.log(User);
+        navigation.navigate('Profile')
+    }
+
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -30,7 +116,7 @@ export default function Edit_profile() {
 
   return (
     <View style={styles.container}>
-        <Icon2 name='arrow-left'size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.goBack()}/>
+          <Icon2 name='arrow-left' size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.navigate('Profile')}/>{/*navigation.goBack()}/>*/}
         <Text style={styles.title} marginLeft={142} marginTop={-35}>Edit Profile</Text>
         <View padding={30}>
             <View style={styles.view_ava}>
@@ -52,25 +138,29 @@ export default function Edit_profile() {
                 <TextInput 
                     style={styles.usernametext}
                     placeholder="First Name"
+                    value={first_Name}
+                    onChangeText={setfirst_Name}
                     placeholderTextColor={color.white}/>
                 <TextInput 
                     style={styles.usernametext}
                     placeholder="Last Name"
-                    placeholderTextColor={color.white}/>
-                <TextInput 
-                    style={styles.usernametext}
-                    placeholder="Email"
+                    value={last_Name}
+                    onChangeText={setlast_Name}
                     placeholderTextColor={color.white}/>
                 <TextInput 
                     style={styles.usernametext}
                     placeholder="Phone"
+                    value={Phone}
+                    onChangeText={setPhone}
                     placeholderTextColor={color.white}/>
                 <TextInput 
                     style={styles.usernametext}
                     placeholder="Address"
+                    value={Address}
+                    onChangeText={setAddress}
                     placeholderTextColor={color.white}/>
             </View>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={ChangeInformation}>
             <View style={styles.button2} >
                 <Text style={styles.buttonText2}>Complete</Text>
             </View>

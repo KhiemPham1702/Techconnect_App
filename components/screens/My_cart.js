@@ -53,7 +53,7 @@ export default function My_cart() {
         return <Product_cart/>;
       };
       const renderItem2 = () => {
-        return <Product/>;
+        //return <Product/>;
       };
   return (
     <View style={styles.container}>

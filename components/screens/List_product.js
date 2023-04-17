@@ -165,7 +165,7 @@ export default function List_product() {
     };
 
     const renderItem = () => {
-        return <Product />;
+        //return <Product />;
     };
 
     const CategoryList = () => {

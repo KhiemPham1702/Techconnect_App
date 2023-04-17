@@ -7,7 +7,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 
+import {User} from '../screens/Login'
+
 export default function Profile() {
+    const [user, setuser] = useState(User);
+
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -45,8 +49,8 @@ export default function Profile() {
                         source={require('../image/camera.png')}
                     />               
                 </View>
-                <Text style={styles.name_user} marginTop={10}>Nguyen Van A</Text>
-                <Text style={styles.id_user}>ID: 0123456789</Text>
+                <Text style={styles.name_user} marginTop={10}>{user.first_Name + ' ' + user.last_Name}</Text>
+                <Text style={styles.id_user}>{'ID: ' + user.ID}</Text>
                 <View style={styles.avatar_view3}>
                     <TouchableOpacity onPress={() => navigation.navigate('Edit_profile')}>
                     <Image
