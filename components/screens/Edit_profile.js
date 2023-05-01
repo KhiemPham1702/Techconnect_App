@@ -9,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import color from '../../contains/color';
 import { db, ref, set, child, get, onValue } from '../DAL/Database'
 import { User, reload } from '../screens/Login'
+import { AddressObj, LoadAddress } from '../screens/Profile';
 
 
 export default function Edit_profile() {
@@ -16,56 +17,38 @@ export default function Edit_profile() {
     const [last_Name, setlast_Name] = useState(User.last_Name)
     //const [Email, setEmail] = useState(User.email)
     const [Phone, setPhone] = useState(User.phone)
-    const [AddressObj, setAddressObj] = useState([])
     const [Address, setAddress] = useState(() => {
-        starCountRef = ref(db, "Address/");
-        let a;
-        onValue(
-            starCountRef,
-            (snapshot) => {
-                setAddressObj([])
-                snapshot.forEach((childSnapshot) => {
-                    let da = childSnapshot.val();
-                    a = childSnapshot.val().address
-                    if (da && da['user_ID'] == User.ID) {
-                        setAddressObj((pre) => [...pre, da])
-                        console.log(a);
-                    }
-                })
-            },
-            {
-                onlyOnce: true,
-            }
-        )
-
-        return a;
+        if(AddressObj != undefined)
+            return AddressObj.address
+        return ""
     })
-
-    useEffect(() => {
-        starCountRef = ref(db, "Address/");  
-        onValue(
-            starCountRef,
-            (snapshot) => {
-                setAddressObj([])
-                snapshot.forEach((childSnapshot) => { 
-                    let da = childSnapshot.val();
-                    const a = childSnapshot.val().address
-                    if (da && da['user_ID'] == User.ID) { 
-                        setAddressObj((pre) => [...pre, da]) 
-
-                        //setAddress((pre) => [...pre, a]) 
-                        //console.log(a);
-                    } 
-                })
-            },
-            {
-                onlyOnce: true,
-            }
-        )
-    }, []);
+    
+    // useEffect(() => {
+    //     starCountRef = ref(db, "Address/");  
+    //     onValue(
+    //         starCountRef,
+    //         (snapshot) => {
+    //             setAddressObj([])
+    //             setAddress("");
+    //             snapshot.forEach((childSnapshot) => { 
+    //                 let da = childSnapshot.toJSON();
+    //                 //da = childSnapshot.toJSON();
+    //                 const a = childSnapshot.val().address
+    //                 if (da && da.user_ID == User.ID) { 
+    //                     setAddressObj((pre) => [...pre, da]) 
+    //                     setAddress((pre) => [...pre, da.address]) 
+    //                     console.log(Address); 
+    //                 } 
+    //             })
+    //         },
+    //         {
+    //             onlyOnce: true,
+    //         }
+    //     )
+    // }, []);
 
     function ChangeInformation(){
-        console.log(User.Information)
+        //console.log(User.Information)
         
         set(ref(db, 'App_user/' + User.ID), {
             ID: User.ID,
@@ -81,18 +64,21 @@ export default function Edit_profile() {
             console.error(error);
         });
 
-        set(ref(db, 'Address/' + AddressObj != null ? AddressObj.id : User.ID), {
-            id: AddressObj != null ? AddressObj.id : User.ID,
+        User.first_Name = first_Name;
+        User.last_Name = last_Name;
+        User.phone = Phone;
+
+        const id = AddressObj != null ? AddressObj.id : User.ID;
+        set(ref(db, 'Address/' + id), {
+            id: id,
             user_ID: User.ID, 
             address: Address,
         }).catch((error) => {
             console.error(error);
         });
 
-        reload(User.ID)
-
         console.log(User);
-        navigation.navigate('Profile')
+        navigation.navigate('Tab_navigation')
     }
 
     const navigation = useNavigation();
@@ -116,7 +102,7 @@ export default function Edit_profile() {
 
   return (
     <View style={styles.container}>
-          <Icon2 name='arrow-left' size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.navigate('Profile')}/>{/*navigation.goBack()}/>*/}
+          <Icon2 name='arrow-left' size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.navigate('Tab_navigation')}/>{/*navigation.goBack()}/>*/}
         <Text style={styles.title} marginLeft={142} marginTop={-35}>Edit Profile</Text>
         <View padding={30}>
             <View style={styles.view_ava}>

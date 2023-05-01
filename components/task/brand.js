@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet,Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React from 'react'
 import { useFonts } from 'expo-font';
 import { useEffect , useState } from 'react';
@@ -6,7 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
-const brand = () => {
+const brand = (props) => {
+
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -17,6 +18,9 @@ const brand = () => {
         await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+
+        //LoadImage()
+
     }, []);
 
     if (!fontsLoaded) {
@@ -25,12 +29,16 @@ const brand = () => {
         SplashScreen.hideAsync();
     };
   return (
-    <View style={styles.brand}>
-          <Image
-              source={require('../image/apple.png')}
-              style={styles.Image}
-          />
-    </View>
+    <TouchableOpacity>
+          <View style={styles.brand}>
+              <Image
+                  //source={require(('../image/apple.png'))}
+                  source={{uri: props.brand.image_Url}}
+                  style={styles.Image}
+              />
+          </View>
+    </TouchableOpacity>
+    
   )
 }
 

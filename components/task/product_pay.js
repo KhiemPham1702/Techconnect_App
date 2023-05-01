@@ -5,7 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
-const product_pay = () => {
+const product_pay = (props) => {
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -29,15 +29,15 @@ const product_pay = () => {
                 <View  style={styles.avatar_view}>
                     <Image
                         style={styles.image}
-                        source={require('../image/3.png')}
+                        source={{uri: props.data.image}}
                     />               
                 </View>
                 <View marginTop={15} marginLeft={10}>
-                    <Text style={styles.pro_name}>Logitech G733 LIGHTSPEED Wireless</Text>
-                    <Text style={styles.pro_color}>Color: White</Text>
-                    <Text style={styles.pro_price} marginTop={3}>$299</Text>
+                    <Text style={styles.pro_name}>{props.data.name}</Text>
+                    <Text style={styles.pro_color}>Color: {props.data.color}</Text>
+                    <Text style={styles.pro_price} marginTop={3}>${props.data.SaleOff}</Text>
                 </View>
-                <Text style={styles.pro_price} marginTop={70} marginLeft={50}>x1</Text>
+                <Text style={styles.pro_price} marginTop={70} marginLeft={50}>x{props.data.quantity}</Text>
             </View>
         </View>
     )

@@ -13,19 +13,22 @@ import color from '../../contains/color';
 import Comment from '../task/comment';
 import Product from '../task/product';
 
-import { db, ref, set, child, get, onValue } from '../DAL/Database'
+import { db, ref, set, child, get, onValue, remove } from '../DAL/Database'
+import { liked, LoadCarts, User, Carts, CartProduct } from '../screens/Login'
+//import { CartProduct, LoadCartProduct } from '../screens/Home'
 
 const { width } = Dimensions.get('window');
 
-
 export default function Product_detail({ route }) {
+    const [BuyOrCart, setBuyOrCart] = useState('Buy Now');
     const [isVisible, setIsVisible] = useState(false);
     const [count, setCount] = useState(1);
     const onPress = () => setCount(prevCount => prevCount + 1);
     const onPress2 = () => setCount(prevCount => ((prevCount <= 1) ? (prevCount + 0) : (prevCount - 1)))
     const [slideAnimation] = useState(new Animated.Value(Dimensions.get('window').height));
     const navigation = useNavigation();
-    const slideUp = () => {
+    const slideUp = (text) => {
+        setBuyOrCart(text)
         Animated.timing(slideAnimation, {
             toValue: 0,
             duration: 500,
@@ -50,6 +53,59 @@ export default function Product_detail({ route }) {
         Gamepad: 4,
     }
 
+    const [like, setLike] = useState(route.params.like.isLike)
+    const [icon, setIcon] = useState(() => {
+        return route.params.like.isLike == true ? 'heart' : 'heart-o';
+    });
+
+    function Like() {
+        set(ref(db, 'Liked/' + (User.ID + route.params.like.ID)), {
+            ID: User.ID + route.params.like.ID,
+            product_ID: route.params.like.ID,
+            user_ID: User.ID
+        })
+            .then(() => {
+                liked.push({ "ID": (User.ID + route.params.like.ID), "user_ID": User.ID, "product_ID": route.params.like.ID })
+            })
+            .catch((error) => {
+                // The write failed...
+            });
+    }
+    function Unlike() {
+        console.log(liked)
+        for (var i = 0; i < liked.length; i++) {
+
+            if (liked.at(i).ID === (User.ID + route.params.like.ID)) {
+
+                liked.splice(i, 1);
+            }
+
+        }
+        remove(ref(db, 'Liked/' + (User.ID + route.params.paramKey.ID)), {
+        })
+            .then(() => {
+                // Data saved successfully!
+            })
+            .catch((error) => {
+                // The write failed...
+            });
+    }
+
+    function ClickHeart() {
+        isLiked = like;
+
+        setLike(!like);
+        //console.log(like);
+
+        if (!isLiked) {
+            Like()
+            setIcon('heart')
+        }
+        else {
+            Unlike()
+            setIcon('heart-o')
+        }
+    }
 
     const [ProductDetail, setProductDetail] = useState([]);
     const [Field, setField] = useState([]);
@@ -66,8 +122,7 @@ export default function Product_detail({ route }) {
             (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     let da = childSnapshot.val();
-                    if(da && da['product_ID'] == route.params.paramKey.ID)
-                    {   
+                    if (da && da['product_ID'] == route.params.paramKey.ID) {
                         console.log(1);
                         delete da['product_ID']
                         //console.log(da);
@@ -75,7 +130,7 @@ export default function Product_detail({ route }) {
                         //da = da.splice(i, 1);
                         setProductDetail((pre) => [...pre, Object.values(da)])
                         setField((pre) => [...pre, Object.keys(da)])
-                        console.log(1); 
+                        console.log(1);
                     }
                 })
             },
@@ -83,7 +138,7 @@ export default function Product_detail({ route }) {
                 onlyOnce: true,
             }
         )
-        
+
         //headphone
         starCountRef = ref(db, "headphone/");
         onValue(
@@ -184,6 +239,15 @@ export default function Product_detail({ route }) {
 
     }, [])
 
+    const PaymentData = new Array({
+        "ID": route.params.paramKey.ID,
+        "name": route.params.paramKey.name,
+        "color": route.params.paramKey.color,
+        "price": route.params.paramKey.price,
+        "quantity": count,
+        "image": route.params.listImage.at(0),
+        "SaleOff": route.params.SaleOff
+    });
 
     const DATA = [[//lap
         { id: "1", title: "CPU" },
@@ -196,7 +260,7 @@ export default function Product_detail({ route }) {
         { id: "8", title: "Communication Port" },
         { id: "9", title: "Keyboard" },
         { id: "10", title: "Battery" },
-    ], 
+    ],
     [//headphone
         { id: "1", title: "Type" },
         { id: "2", title: "Connection Type" },
@@ -204,7 +268,7 @@ export default function Product_detail({ route }) {
         { id: "4", title: "Microphone" },
         { id: "5", title: "Impedance" },
         { id: "6", title: "Frequency" },
-    ], 
+    ],
     [//keyboard
         { id: "1", title: "Type" },
         { id: "2", title: "Led" },
@@ -325,6 +389,56 @@ export default function Product_detail({ route }) {
         )
     };
 
+    function BuyOrAddToCart() {
+        //// Add to cart ////
+        let unique = (+new Date).toString(36);
+        console.log(unique);
+        set(ref(db, 'Cart/' + unique), {
+            ID: unique,
+            user_ID: User.ID,
+            product_ID: route.params.paramKey.ID,
+            order_ID: "",
+            quantity: count,
+            product_Type: ""
+        }).catch((error) => {
+            console.error(error);
+        });
+
+        const carts = new Array({"ID": unique})
+        //// buy now ////
+        if (BuyOrCart == 'Buy Now') {
+            navigation.navigate('Payment', {
+                productData: PaymentData,
+                carts: carts,
+            })
+        }
+
+        Carts.push({
+            ID: unique,
+            user_ID: User.ID,
+            product_ID: route.params.paramKey.ID,
+            order_ID: "",
+            quantity: count,
+            product_Type: "",
+            image: route.params.listImage.at(0),
+            discount_ID: route.params.paramKey.discount_ID,
+            SaleOff: route.params.SaleOff
+        })
+
+        const starCountRef = ref(db, "Product/" + route.params.paramKey.ID);
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                CartProduct.push(snapshot.val())
+            },
+            {
+                onlyOnce: true,
+            }
+        );
+
+        sliceDown()
+    }
+
     const Product_image = ({ item }) => {
         //const item = 'https://reactnative.dev/img/tiny_logo.png?fbclid=IwAR1EhF8DfYpEoBdAqNen17pOnhlVWzksrLWoXFXto8oHuLgpwZwvnrjxPI4'
         return (
@@ -372,7 +486,7 @@ export default function Product_detail({ route }) {
                                     source={require('../image/OFF2.png')}
                                     height={'100%'}
                                     width={'100%'} />
-                                <Text style={styles.off_text}>25%</Text>
+                                <Text style={styles.off_text}>{route.params.ratio}%</Text>
                             </View>
                         </View>
                         <View style={styles.star} marginTop={10}>
@@ -385,8 +499,8 @@ export default function Product_detail({ route }) {
                         </View>
                         <View flexDirection='row' marginTop={5}>
                             <Text style={styles.price}>${route.params.paramKey.price}</Text>
-                            <Text style={styles.price_sale}>$5000</Text>
-                            <Icon name='heart-o' size={28} color={color.white} marginLeft={130} marginTop={3} />
+                            <Text style={styles.price_sale}>${route.params.SaleOff}</Text>
+                            <Icon name={icon} onPress={ClickHeart} size={28} color={color.white} marginLeft={130} marginTop={3} />
                             <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10} />
                         </View>
                         <View style={styles.line} />
@@ -450,7 +564,7 @@ export default function Product_detail({ route }) {
                     </ScrollView>
                     <View style={styles.bottom_view}>
                         <View flexDirection='row' height={40} width={215} marginTop={13}>
-                            <TouchableOpacity onPress={slideUp}>
+                            <TouchableOpacity onPress={() => slideUp('Add to cart')}>
                                 <View height={40} width={215} marginLeft={15}>
                                     <Image
                                         source={require('../image/btAddtoCart.png')}
@@ -458,7 +572,7 @@ export default function Product_detail({ route }) {
                                         width={215} />
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={slideUp}>
+                            <TouchableOpacity onPress={() => slideUp('Buy Now')}>
                                 <View height={40} width={215} marginLeft={-60}>
                                     <Image
                                         source={require('../image/btBuyNow.png')}
@@ -491,8 +605,8 @@ export default function Product_detail({ route }) {
                             </View>
                         </View>
                         <View marginTop={5} marginLeft={10}>
-                            <Text style={styles.pro_name}>Logitech G733 LIGHTSPEED Wireless</Text>
-                            <Text style={styles.pro_color}>$299</Text>
+                            <Text style={styles.pro_name}>{route.params.paramKey.name}</Text>
+                            <Text style={styles.pro_color}>{"$" + route.params.paramKey.price}</Text>
                         </View>
                         <TouchableOpacity onPress={sliceDown}>
                             <Icon4 name='window-close' size={30} color={'black'} marginLeft={60} />
@@ -525,9 +639,9 @@ export default function Product_detail({ route }) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={BuyOrAddToCart}>
                             <View style={styles.button2}>
-                                <Text style={styles.buttonText2}>Buy Now</Text>
+                                <Text style={styles.buttonText2}>{BuyOrCart}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

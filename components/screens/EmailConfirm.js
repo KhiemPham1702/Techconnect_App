@@ -1,13 +1,18 @@
 import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
+import {User} from '../screens/Login'
+
+//import { SendEmail } from '../DAL/SendEmail';
 
 export default function EmailConfirm() {
+  const [Email, setEmail] = useState(User.email);
+
   const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
@@ -26,6 +31,19 @@ export default function EmailConfirm() {
   } else {
     SplashScreen.hideAsync();
   };
+
+  function SendCode() {
+    if(Email != User.email) {
+      alert("Please, fill correct Email")
+    }
+    else {
+      alert("Check mail and fill code to change password")
+
+      //SendEmail(Email)
+    }
+  }
+
+
   return (
     <View style={styles.container}>
       <View style={StyleSheet.absoluteFill}>
@@ -39,21 +57,24 @@ export default function EmailConfirm() {
         </Svg>
       </View>
       <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
-                <Svg height={40} width={40}  >
-                <Image 
-                onPress={() => navigation.goBack()}
-                    href={require('../image/icon_back_white.png')} 
-                    height={40} 
-                    width={40}
-                    preserveAspectRatio="xMidYMid slice"/>
-            </Svg>
-        </View> 
-      <TextInput 
+        <Svg height={40} width={40}  >
+          <Image
+            onPress={() => navigation.goBack()}
+            href={require('../image/icon_back_white.png')}
+            height={40}
+            width={40}
+            preserveAspectRatio="xMidYMid slice" />
+        </Svg>
+      </View>
+      <TextInput
         style={styles.usernametext}
         placeholder="Enter Email"
-        placeholderTextColor={color.white}/>
+        placeholderTextColor={color.white} 
+        value={Email}
+        onChangeText={setEmail}
+        />
       <View style={styles.button}>
-          <Text style={styles.buttonText}>NEXT</Text>
+        <Text style={styles.buttonText} onPress={SendCode}>NEXT</Text>
       </View>
     </View>
   );

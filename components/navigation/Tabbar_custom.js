@@ -12,6 +12,8 @@ import My_cart from "../screens/My_cart";
 import Discount from "../screens/Discount";
 import Profile from "../screens/Profile";
 
+
+
 const Tabbar_custom = ({ state , navigation }) => {
     const tabs = [
         {

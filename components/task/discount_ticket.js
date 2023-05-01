@@ -1,11 +1,25 @@
-import { View, Text, StyleSheet, Image, ImageBackground} from 'react-native';
+import { View, Text, StyleSheet, Image, ImageBackground } from 'react-native';
 import { useFonts } from 'expo-font';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
-const discount_ticket = () => {
+import { db, ref, set, child, get, onValue, update } from '../DAL/Database'
+import { User } from '../screens/Login'
+import { DisCount } from '../screens/Discount';
+
+const discount_ticket = (props) => {
+    const icon = props.data.Type == "Sale Off" ? require('../image/saleoff.png') : require('../image/free_ship.png');
+
+    const [SaveOrUse, setSaveOrUse] = useState(() => {
+        //console.log(props.data.user_ID)
+        if (props.data.user_ID == "")
+            return "Save";
+        else
+            return "Use";
+    })
+
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -14,7 +28,7 @@ const discount_ticket = () => {
     });
     useEffect(() => {
         async function prepare() {
-        await SplashScreen.preventAutoHideAsync();
+            await SplashScreen.preventAutoHideAsync();
         }
         prepare();
     }, []);
@@ -24,34 +38,57 @@ const discount_ticket = () => {
     } else {
         SplashScreen.hideAsync();
     };
+
+    function UpdateDiscount() {
+        const updates = {};
+        updates['/Discount/' + props.data.ID + '/' + 'user_ID'] = User.ID;
+
+        update(ref(db), updates);
+    }
+
+    function SaveOrUsePress() {
+        if (SaveOrUse === "Save") {
+            UpdateDiscount()
+
+            if (props.parentReference != undefined)
+                props.parentReference(props.data.ID);
+        }
+        else {
+            //// Use Discount ////
+            props.fromMyDiscount("from Discount Ticket", props.data)
+        }
+    }
+
     return (
-        <ImageBackground 
-            style={styles.container} 
+        <ImageBackground
+            style={styles.container}
             source={require('../image/discount.png')}>
-                <View>
-                    <View flexDirection='row'>
-                        <View alignItems='center' justifyContent='center' height={120}>
-                            <View  style={styles.avatar_view}>
+            <View>
+                <View flexDirection='row'>
+                    <View alignItems='center' justifyContent='center' height={120}>
+                        <View style={styles.avatar_view}>
                             <Image
                                 style={styles.image}
-                                source={require('../image/free_ship.png')}/>               
-                            </View>
-                        </View>
-                        <View marginLeft={35}>
-                            <Text style={styles.tiket} marginTop={17}>Up to $25 off</Text>
-                            <Text style={styles.limit}>Minimum order $100</Text>
-                            <Text style={styles.date} marginTop={17}>Until: 02/02/2023</Text>
-                        </View>
-                        <View style={styles.save} marginTop={38} marginLeft={13}>
-                            <Text style={styles.save_text}>Save</Text>
+                                // source={require('../image/free_ship.png')} />
+                                source={icon} />
                         </View>
                     </View>
+                    <View marginLeft={35}>
+                        <Text style={styles.tiket} marginTop={17}>Up to {props.data.ratio}% off</Text>
+                        <Text style={styles.limit}>Minimum order 100$</Text>
+                        <Text style={styles.date} marginTop={17}>Until: {props.data.expirationDate}</Text>
+                    </View>
+                    <View style={styles.save} marginTop={38} marginLeft={13}>
+                        <Text style={styles.save_text} onPress={SaveOrUsePress}>{SaveOrUse}</Text>
+                    </View>
                 </View>
+            </View>
         </ImageBackground>
     )
 }
 
-export default discount_ticket;
+//export default discount_ticket;
+export default React.forwardRef(discount_ticket);
 
 const styles = StyleSheet.create({
     container: {
@@ -64,7 +101,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 75,
         marginLeft: 5,
-        overflow: 'hidden',       
+        overflow: 'hidden',
     },
     image: {
         width: '100%',

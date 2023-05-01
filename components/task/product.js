@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React from 'react'
+import React, { useImperativeHandle } from 'react'
 //import Svg, { Image } from "react-native-svg";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
@@ -9,26 +9,85 @@ import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 
-import { db, ref, set, child, get, onValue, storage } from '../DAL/Database'
+import { db, set, child, get, onValue, storage, remove, GetRef } from '../DAL/Database'
+import { User, liked } from '../screens/Login'
+
 
 const product = (props) => {
+    const [like, setLike] = useState(props.like.islike)
+    const [icon, setIcon] = useState(() => {
+        return props.like.islike == true ? 'heart' : 'heart-o';
+    });
 
-
+    const [ratio, setRatio] = useState(0)
+    const [SaleOff, setSaleOff] = useState(props.data.price)
     const [myImage, setImage] = useState([]);
 
+    
+
+    // parent call child function
+    // useImperativeHandle(ref, () => ({
+    //     reSetData: () => {ResetData()},
+    // }));
+
+
+
+    // function ResetData() {
+    //     console.log(props.data)
+    //     //console.log(SaleOff)
+    //     setLike(props.like.isLike)
+    //     setIcon(props.like.islike == true ? 'heart' : 'heart-o')
+    //     setSaleOff(props.data.price)
+    //     LoadImageOfProduct()
+    //     LoadSaleOff()
+
+        
+    // }
+
     const ListImage = useState([]);
-    useEffect(() => {
-        // Update the document title using the browser API
-        const starCountRef = ref(db, "Image/");
+
+    function LoadSaleOff(id) {
+        if (id != "") {
+            
+            const starCountRef = GetRef("Discount/" + id)//ref(db, "Discount/" + props.data.discount_ID);
+            onValue(
+                starCountRef,
+                (snapshot) => {
+                    let d = snapshot.val()
+                    let date = new Date(d.expirationDate)
+                    if (d != undefined && (isNaN(date) || date >= new Date())) {
+                        let sale = (props.data.price * (100 - d.ratio) / 100)
+                        setSaleOff(sale); 
+                        setRatio(d.ratio)
+                        
+                        //console.log(sale)
+                    }
+                },
+                {
+                    onlyOnce: true,
+                }
+            );
+        }
+        else {
+            setRatio(0)
+            setSaleOff(props.data.price)
+        }
+
+    }
+
+    function LoadImageOfProduct() {
         setImage([]);
+
+        const starCountRef = GetRef("Image/")//ref(db, "Image/");
         onValue(
             starCountRef,
             (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     //console.log(props.data.ID)
-                    if(childSnapshot.val().product_ID == props.data.ID){
+                    if (childSnapshot.val().product_ID == props.data.ID) {
                         //console.log(childSnapshot.val().image_Url)
                         setImage((pre) => [...pre, childSnapshot.val().image_Url]);
+                        //console.log(childSnapshot.val())
                     }
                 })
             },
@@ -36,7 +95,17 @@ const product = (props) => {
                 onlyOnce: true,
             }
         );
-    }, []);
+    }
+
+    useEffect(() => {
+        setLike(props.like.islike);
+        setIcon(props.like.islike == true ? 'heart' : 'heart-o');
+
+        LoadSaleOff(props.data.discount_ID);
+        LoadImageOfProduct();
+
+        //console.log("Hello")
+    }, [props]);
 
 
     const navigation = useNavigation();
@@ -58,9 +127,56 @@ const product = (props) => {
         SplashScreen.hideAsync();
     };
 
-    
+    function Like() {
+        //set(ref(db, 'Liked/' + (User.ID + props.data.ID)), {
+        set(GetRef('Liked/' + (User.ID + props.data.ID)), {
+            ID: User.ID + props.data.ID,
+            product_ID: props.data.ID,
+            user_ID: User.ID
+        })
+            .then(() => {
+                liked.push({"ID": (User.ID + props.data.ID), "user_ID": User.ID, "product_ID": props.data.ID})
+            })
+            .catch((error) => {
+                // The write failed...
+            });
+    }
+    function Unlike() {
+        console.log(liked)
+        for (var i = 0; i < liked.length; i++) {
 
-    
+            if (liked.at(i).ID === props.like.id) {
+
+                liked.splice(i, 1);
+            }
+
+        }
+        //remove(ref(db, 'Liked/' + props.like.id), {
+        remove(GetRef('Liked/' + props.like.id), {
+        })
+            .then(() => {
+                // Data saved successfully!
+            })
+            .catch((error) => {
+                // The write failed...
+            });
+    }
+
+    function ClickHeart() {
+        isLiked = like;
+
+        setLike(!like);
+        //console.log(like);
+
+        if (!isLiked) {
+            Like()
+            setIcon('heart')
+        }
+        else {
+            Unlike()
+            setIcon('heart-o')
+        }
+    }
 
     return (
         <View style={styles.product}>
@@ -80,6 +196,9 @@ const product = (props) => {
                 <TouchableOpacity onPress={() => navigation.navigate('Product_detail', {
                     paramKey: props.data,
                     listImage: myImage,
+                    like: {"isLike": like, "ID": props.data.ID},
+                    ratio : ratio,
+                    SaleOff: SaleOff
                 })}>
                     <View style={styles.img_view}>
                         <Image
@@ -94,20 +213,24 @@ const product = (props) => {
 
             </View>
             <View flexDirection='row'>
-                <Icon name='heart-o' size={25} color={color.grey_text} marginLeft={10} marginTop={7} />
-                <View style={StyleSheet.absoluteFill} marginLeft={130}>
-                    {/* <Svg height={41} width={29}> 
-                    <Image 
-                        href={require('../image/OFF.png')} 
-                        height={41} 
+
+
+                <Icon name={icon} onPress={ClickHeart} size={25} color={color.red} marginLeft={10} marginTop={7} />
+                {/* {renderLike} */}
+                <View marginLeft={90} marginTop={0}>
+                    {/* <Svg height={41} width={29}>
+                    <Image
+                        href={require('../image/OFF.png')}
+                        height={41}
                         width={29}
                         resizeMode={'xMidYMid slice'}/>
                     <Text style={styles.off_text}>25%</Text>
                 </Svg> */}
                     <Image
-                        href={require('../image/OFF.png')}
+                        source={require('../image/OFF.png')}
                         height={41}
                         width={29} />
+                    <Text style={styles.off_text}>{ratio}%</Text>
                     {/* resizeMode={'xMidYMid slice'} /> */}
                 </View>
             </View>
@@ -121,7 +244,7 @@ const product = (props) => {
             </View>
             <View flexDirection='row' marginTop={5} marginHorizontal={8}>
                 <Text style={styles.price}>${props.data.price}</Text>
-                <Text style={styles.price_sale}>$5000</Text>
+                <Text style={styles.price_sale}>${SaleOff}</Text>
             </View>
             <View style={StyleSheet.absoluteFill} marginLeft={142} marginTop={160}>
                 {/* <Svg height={33} width={33}> 
@@ -142,7 +265,8 @@ const product = (props) => {
     )
 }
 
-export default product;
+//export default product;
+export default React.forwardRef(product);
 
 const styles = StyleSheet.create({
     product: {
@@ -183,6 +307,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         fontFamily: 'Inter_SemiBold',
         fontSize: 10,
+        marginTop: -37,
         color: color.white,
     },
     img: {

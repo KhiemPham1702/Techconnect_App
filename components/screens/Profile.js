@@ -7,10 +7,37 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 
-import {User} from '../screens/Login'
+import { User, reload } from '../screens/Login'
+import { db, ref, set, child, get, onValue, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '../DAL/Database'
+
+
+export var AddressObj = undefined;
+
+
 
 export default function Profile() {
-    const [user, setuser] = useState(User);
+    const [currentUser, setcurrentUser] = useState(User)
+
+    function LoadAddress() {
+        starCountRef = ref(db, "Address/");
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    let data = childSnapshot.toJSON();
+                    if (data && data.user_ID == User.ID) {
+                        AddressObj = data;
+                        console.log(AddressObj);
+                    }
+                })
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+
+    }
+
 
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
@@ -23,6 +50,14 @@ export default function Profile() {
         async function prepare() {
         await SplashScreen.preventAutoHideAsync();
         }
+
+        navigation.addListener('focus', () => {
+            //alert('Refreshed');
+            reload(User.ID)
+            setcurrentUser(User);
+        });
+
+        LoadAddress()
         prepare();
     }, []);
 
@@ -31,6 +66,13 @@ export default function Profile() {
     } else {
         SplashScreen.hideAsync();
     };
+
+    
+    function ChangePassword() {
+        navigation.navigate('NewPass', {
+            user : User,
+        })
+    }
 
   return (
     <View style={styles.container}>
@@ -49,10 +91,10 @@ export default function Profile() {
                         source={require('../image/camera.png')}
                     />               
                 </View>
-                <Text style={styles.name_user} marginTop={10}>{user.first_Name + ' ' + user.last_Name}</Text>
-                <Text style={styles.id_user}>{'ID: ' + user.ID}</Text>
+                  <Text style={styles.name_user} marginTop={10}>{currentUser.first_Name + ' ' + currentUser.last_Name}</Text>
+                  <Text style={styles.id_user}>{'ID: ' + currentUser.ID}</Text>
                 <View style={styles.avatar_view3}>
-                    <TouchableOpacity onPress={() => navigation.navigate('Edit_profile')}>
+                      <TouchableOpacity onPress={() => navigation.navigate('Edit_profile')}>
                     <Image
                         style={styles.image3}
                         source={require('../image/edit.png')}
@@ -108,7 +150,7 @@ export default function Profile() {
                             style={styles.image4}
                             source={require('../image/change.png')}/>               
                     </View>
-                    <Text style={styles.section} onPress={() => navigation.navigate('EmailConfirm')}>Change Password</Text>
+                    <Text style={styles.section} onPress={ChangePassword}>Change Password</Text>
                     <Icon name='chevron-right' size={30} color={color.white} marginTop={3} marginLeft={110} onPress={() => navigation.navigate('EmailConfirm')}/>
                 </View>
                 <View flexDirection='row' marginTop={15}>

@@ -1,16 +1,26 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 import { useFonts } from 'expo-font';
 import Checkbox from 'expo-checkbox';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useImperativeHandle } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
 
 import color from '../../contains/color';
 
-const product_cart = () => {
+import { db, ref, set, child, get, onValue, update, GetRef} from '../DAL/Database'
+//import { CartProduct } from '../screens/Home';
+
+const product_cart = (props, ref) => {
+    const navigation = useNavigation();
+
+    const Data = props.data.product
+    //const [Data, setData] = useState(props.data.product)
+
+
     const [isChecked, setChecked] = useState(false);
     const toggleCheckbox = () => setChecked(!checked);
-    const [count, setCount] = useState(1);
+    const [count, setCount] = useState(props.data.quantity);
     const onPress = () => setCount(prevCount => prevCount + 1);
     const onPress2 = () => setCount(prevCount => ((prevCount <= 1) ? (prevCount + 0) : (prevCount - 1)))
     const [fontsLoaded] = useFonts({
@@ -18,12 +28,141 @@ const product_cart = () => {
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
         Inter_Light: require('../../assets/fonts/Inter-Light.ttf'),
     });
+
+    var SaleOff = Data.price
+    
+
+    const [saleOff, setSaleOff] = useState(SaleOff)
+
+    // const [name, setName] = useState(() => {
+    //     if (props.data.product != undefined)
+    //         return props.data.product.name
+    //     else
+    //         return ""
+    // })
+    // const [color, setColor] = useState(() => {
+    //     if (props.data.product != undefined)
+    //         return props.data.product.color
+    //     else
+    //         return ""
+    // })
+
+    // function LoadSaleOff() {
+    //     const data = props.data.product
+        
+    //     if (data != undefined && data.discount_ID != "") {
+    //         console.log(data)
+    //         const starCountRef = GetRef("Discount/" + data.discount_ID)
+    //         onValue(
+    //             starCountRef,
+    //             (snapshot) => {
+    //                 let d = snapshot.val()
+    //                 if (d != undefined) {
+    //                     let sale = (data.price * (100 - d.ratio) / 100)
+    //                     setSaleOff(sale);
+    //                 }
+    //             }
+    //         );
+    //     }
+    // }
+
+    function LoadSaleOff() {
+        const data = props.data.product
+        
+        if (data != undefined && data.discount_ID != "" ) {
+            console.log(data)
+            const starCountRef = GetRef("Discount/" + data.discount_ID)
+            onValue(
+                starCountRef,
+                (snapshot) => {
+                    let d = snapshot.val()
+                    let date = new Date(d.expirationDate)
+                    if (d != undefined && date >= new Date()) {
+                        let sale = (data.price * (100 - d.ratio) / 100)
+                        SaleOff = sale
+                        setSaleOff(sale)
+                    }
+                }
+            );
+        }
+    }
+
     useEffect(() => {
         async function prepare() {
-        await SplashScreen.preventAutoHideAsync();
+            await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+        
+        navigation.addListener('focus', () => {
+            unChecked()
+            //console.log(Data);
+            // setData([])
+            // for (var i = 0; i < CartProduct.length; i++) {
+            //     if (CartProduct.at(i).ID == props.data.product_ID) {
+            //         setData((pre) => [...pre, CartProduct.at(i)]);
+
+            //         break;
+            //     }
+            // }
+            
+        });
+
+        LoadSaleOff()
+
     }, []);
+
+    // useImperativeHandle(childRef, () => ({
+    //     Check: (checked) => {Checked(checked)},
+    // }));
+
+    useImperativeHandle(ref, () => ({
+        Checked: (checked) => {Checked(checked)},
+        unChecked: () => {unChecked()}
+    }));
+
+    function unChecked() {
+        setChecked(false)
+    }
+
+    function Checked(checked) {
+        let check = isChecked
+
+        var PaymentData = new Array({
+            "ID": Data.ID,
+            "name": Data.name,
+            "color": Data.color, 
+            "price": Data.price,
+            "quantity": count,
+            "image": props.data.image,
+            "discount_ID": Data.discount_ID,
+            "SaleOff": saleOff,
+        });
+
+        if(checked == "")
+        {
+            
+            props.parentReference(PaymentData, !check);
+
+            setChecked(!check)
+        }
+        
+        else if(checked == true) {
+            if (check == false) {
+                props.parentReference(PaymentData, true);
+
+                setChecked(true)
+            }
+        }
+        else {
+            if (check == true) {
+                props.parentReference(PaymentData, false);
+
+                setChecked(false)
+            }
+        }
+
+        //console.log(ref)
+    }
 
     if (!fontsLoaded) {
         return undefined;
@@ -35,20 +174,23 @@ const product_cart = () => {
             <Checkbox
                 style={styles.checkbox}
                 value={isChecked}
-                onValueChange={setChecked}
+                onValueChange={() => Checked("")}
                 color={isChecked ? color.red : undefined}
             />
             <View style={styles.view_pro}>
                 <View style={styles.avatar_view}>
                     <Image
                         style={styles.image}
-                        source={require('../image/3.png')}
-                    />               
+                        source={{ uri: props.data.image }}
+                    />
                 </View>
                 <View marginTop={15} marginLeft={10}>
-                    <Text style={styles.pro_name}>Logitech G733 LIGHTSPEED Wireless</Text>
-                    <Text style={styles.pro_color}>Color: White</Text>
-                    <Text style={styles.pro_price}>$299</Text>
+                    {/* <Text style={styles.pro_name}>{() => {if(Data.name != undefined) return Data.name}}</Text>
+                    <Text style={styles.pro_color}>Color:{() => { if (Data.color != undefined) return Data.color }} </Text>
+                    <Text style={styles.pro_price}>${() => { if (Data.price != undefined) return Data.price }}</Text> */}
+                    <Text style={styles.pro_name}>{Data.name}</Text>
+                    <Text style={styles.pro_color}>Color:{Data.color} </Text>
+                    <Text style={styles.pro_price}>${saleOff}</Text>
                 </View>
                 <View style={styles.add}>
                     <TouchableOpacity onPress={onPress2}>
@@ -64,7 +206,8 @@ const product_cart = () => {
     )
 }
 
-export default product_cart;
+//export default product_cart;
+export default React.forwardRef(product_cart);
 
 const styles = StyleSheet.create({
     container: {
@@ -94,7 +237,7 @@ const styles = StyleSheet.create({
         marginTop: 7,
         marginLeft: 5,
         borderRadius: 5,
-        overflow: 'hidden',       
+        overflow: 'hidden',
     },
     image: {
         width: '100%',

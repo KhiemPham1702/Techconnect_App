@@ -1,8 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
-import { getDatabase, ref, set, onValue, child, get, push, update, runTransaction, increment  } from "firebase/database";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+    linkWithCredential, EmailAuthProvider, isSignInWithEmailLink, signInWithEmailLink,
+    GoogleAuthProvider, FacebookAuthProvider, linkWithPopup, signInWithPopup
+} from "firebase/auth"
+import { getDatabase, ref, set, onValue, child, get, push, update, runTransaction, 
+    increment, remove,  } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -30,7 +34,13 @@ const storage = getStorage();
 
 const auth = getAuth(app);
 
+export function GetRef(path) {
+    return ref(db, path);
+}
+
+
 export { db, ref, set, onValue, child, get, push, 
     update, runTransaction, increment, storage, auth, createUserWithEmailAndPassword,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword, linkWithCredential, EmailAuthProvider, signInWithEmailLink, isSignInWithEmailLink,
+    linkWithPopup, getAuth, GoogleAuthProvider, signInWithPopup, remove,
 };

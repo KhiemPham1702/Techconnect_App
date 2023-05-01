@@ -1,13 +1,19 @@
 import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import Svg, { Image } from "react-native-svg";
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
+import { FacebookAuthProvider, getAuth, linkWithPopup, GoogleAuthProvider, signInWithPopup, auth } from '../DAL/Database'
+
+
 export default function Verify() {
+  const[Email, setEmail] = useState(); 
+
+
   const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
   const [fontsLoaded] = useFonts({
@@ -26,6 +32,11 @@ export default function Verify() {
   } else {
     SplashScreen.hideAsync();
   };
+
+  function VerifyWithGmail() {
+    
+  }
+
   return (
     <View style={styles.container}>
       <View style={StyleSheet.absoluteFill}>
@@ -41,7 +52,7 @@ export default function Verify() {
       <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
                 <Image 
-                    onPress={() => navigation.navigate('SignUp')}
+                    onPress={() => navigation.goBack()}
                     href={require('../image/icon_back_white.png')} 
                     height={40} 
                     width={40}
@@ -50,11 +61,13 @@ export default function Verify() {
         </View> 
       <TextInput 
         style={styles.usernametext}
-        placeholder="Verifycation Code"
+        placeholder="Email"
+        value={Email}
+        onChangeText={setEmail}
         placeholderTextColor={color.white}/>
       <View style={styles.button}>
           <Text style={styles.buttonText}
-            onPress={() => navigation.navigate('NewPass')}>ACCURACY</Text>
+          onPress={VerifyWithGmail}>ACCURACY</Text>
       </View>
     </View>
   );

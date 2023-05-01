@@ -8,30 +8,151 @@ import * as SplashScreen from 'expo-splash-screen';
 import color from '../../contains/color';
 
 import { db, ref, set, child, get, onValue, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '../DAL/Database'
+import { connectStorageEmulator } from 'firebase/storage';
 
 export var User = undefined;
+export var liked = [];
+export var brand = []
+export let Carts = []
+export var CartProduct = [];
+
 
 export function reload(id){
   const starCountRef = ref(db, "App_user/" + id);
   onValue(
     starCountRef,
     (snapshot) => {
-      const user = snapshot.toJSON();
-      User = user;
+      let loadUser = snapshot.val();
+      User = loadUser;
+      //console.log(loadUser)
+    },
+    {
+      onlyOnce: true,
     }
-  );
+  )
+}
+
+export function LoadLiked(id) {
+  starCountRef = ref(db, "Liked/");
+  onValue(
+    starCountRef,
+    (snapshot) => {
+      liked = []
+      snapshot.forEach((childSnapshot) => {
+        let like = childSnapshot.val();
+        if (like && like['user_ID'] == id) {
+          liked.push(like)
+        }
+      })
+    },
+    {
+      onlyOnce: true,
+    }
+  )
 }
 
 export default function Login() {
+
+
   const navigation = useNavigation();
 
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const [Hide, setHide] = useState(true);
 
+  const [test, setTest] = useState(Carts)
+
   function HideAndShow(){
     setHide(!Hide);
   }
+
+  function LoadCarts(ID) {
+    const starCountRef = ref(db, "Cart/");
+    console.log("Load carts ")
+    console.log(ID)
+    onValue(
+      starCountRef,
+      (snapshot) => {
+        //Carts = []
+        snapshot.forEach((childSnapshot) => {
+          const cart = childSnapshot.val()
+          //console.log(cart.user_ID)
+          if (cart.order_ID == "" && cart.user_ID == ID) {
+            setTest((pre) => [...pre, cart]);
+            Carts.push(cart)
+
+            // if(Carts.length > 1) {
+            //   Carts.sort(function(a,b){return a.product_ID - b.product_ID})
+            // }
+          }
+
+        });
+      },
+      {
+        onlyOnce: true,
+      }
+    );
+  }
+ 
+  function LoadBrand() {
+    //console.log("Load product")
+    const starCountRef = ref(db, "Brand/");
+
+    brand = []
+    onValue(
+      starCountRef,
+      (snapshot) => {
+        console.log(snapshot)
+        snapshot.forEach((childSnapshot) => {
+          brand.push(childSnapshot.val())
+        });
+      },
+      {
+        onlyOnce: true,
+      }
+    );
+  }
+
+  function CheckAccount(id){
+    starCountRef = ref(db, "App_user/" + id);
+    onValue(
+      starCountRef,
+      (snapshot) => {
+        if(id == ""){
+          snapshot.forEach((childSnapshot) => {
+            let user = childSnapshot.val();
+            if (user && user['email'] == Email && user['password'] == Password) {
+              User = user;
+              
+
+              CartProduct = []
+              Carts = []
+              LoadCarts(user.ID)
+              LoadLiked(user.ID)
+              navigation.navigate('Tab_navigation')
+            }
+          })
+        }
+        else {
+
+          let loadUser = snapshot.val();
+          User = loadUser;
+          CartProduct = []
+          Carts = []
+          LoadCarts(loadUser.ID)
+          //LoadCarts(loadUser.ID)
+          LoadLiked(loadUser.ID)
+          navigation.navigate('Tab_navigation')
+        }
+
+
+      },
+      {
+        onlyOnce: true,
+      }
+    )
+  }
+
 
   function CreateAccountWithEmail(){
     createUserWithEmailAndPassword(auth, Email, Password)
@@ -39,7 +160,7 @@ export default function Login() {
         console.log("Create User")
         // Signed in 
         const user = userCredential.user;
-        console.log(user.uid)
+        //console.log(user.uid)
         
         set(ref(db, 'App_user/' + user.uid), {
           ID: user.uid,
@@ -48,24 +169,25 @@ export default function Login() {
           enabled: "",
           first_Name: "Nguyễn Văn",
           last_Name: "A",
-          password: user.uid,
+          password: Password,
           phone: "",
           reset_password_token: "",
         }).then(() => {
-          starCountRef = ref(db, "App_user/" + user.uid);
-          onValue(
-            starCountRef,
-            (snapshot) => {
-              snapshot.forEach((childSnapshot) => {
-                let loadUser = childSnapshot.val();
-                User = loadUser;
-                navigation.navigate('Tab_navigation')
-              })
-            },
-            {
-              onlyOnce: true,
-            }
-          )
+          CheckAccount(user.uid)
+          // starCountRef = ref(db, "App_user/" + user.uid);
+          // onValue(
+          //   starCountRef,
+          //     (snapshot) => {
+          //       let loadUser = snapshot.val();
+          //       User = loadUser;
+          //       console.log(loadUser)
+          //       navigation.navigate('Tab_navigation')
+              
+          //   },
+          //   {
+          //     onlyOnce: true,
+          //   }
+          // )
         });
       })
       .catch((error) => {
@@ -78,48 +200,49 @@ export default function Login() {
     signInWithEmailAndPassword(auth, Email, Password)
       .then((userCredential) => {
         // Signed in 
-        console.log("Sign in")
+        //console.log("Sign in")
         const user = userCredential.user;
 
-        starCountRef = ref(db, "App_user/" + user.uid);
-        onValue(
-          starCountRef,
-          (snapshot) => {
-            let loadUser = snapshot.val();
-            User = loadUser;
-            console.log(loadUser)
-            navigation.navigate('Tab_navigation')
-          },
-          {
-            onlyOnce: true,
-          }
-        )
+        CheckAccount(user.uid)
+        // starCountRef = ref(db, "App_user/" + user.uid);
+        // onValue(
+        //   starCountRef,
+        //   (snapshot) => {
+        //     let loadUser = snapshot.val();
+        //     User = loadUser;
+        //     console.log(loadUser)
+        //     navigation.navigate('Tab_navigation')
+        //   },
+        //   {
+        //     onlyOnce: true,
+        //   }
+        // )
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
       });
 
-    alert("Login with email")
   }
 
   function Login(){
-    starCountRef = ref(db, "App_user/");
-    onValue(
-      starCountRef,
-      (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          let user = childSnapshot.val();
-          if (user && user['email'] == Email && user['password'] == Password) {
-            User = user;
-            navigation.navigate('Tab_navigation')
-          }
-        })
-      },
-      {
-        onlyOnce: true,
-      }
-    )
+    CheckAccount("");
+    // starCountRef = ref(db, "App_user/");
+    // onValue(
+    //   starCountRef,
+    //   (snapshot) => {
+    //     snapshot.forEach((childSnapshot) => {
+    //       let user = childSnapshot.val();
+    //       if (user && user['email'] == Email && user['password'] == Password) {
+    //         User = user;
+    //         navigation.navigate('Tab_navigation')
+    //       }
+    //     })
+    //   },
+    //   {
+    //     onlyOnce: true,
+    //   }
+    // )
 
     signInWithEmailAndPassword(auth, Email, Password)
       .then((userCredential) => {
@@ -127,23 +250,11 @@ export default function Login() {
         console.log("Sign in")
         const user = userCredential.user;
 
-        starCountRef = ref(db, "App_user/" + user.uid);
-        onValue(
-          starCountRef,
-          (snapshot) => {
-            let loadUser = snapshot.val();
-            User = loadUser;
-            console.log(loadUser)
-            navigation.navigate('Tab_navigation')
-          },
-          {
-            onlyOnce: true,
-          }
-        )
+        CheckAccount(user.ID);
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
+        const errorMessage = error.message; 
       });
 
     // const starCountRef = ref(db, "App_user/" + Email);
@@ -182,7 +293,14 @@ export default function Login() {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }
+
     prepare();
+
+    LoadBrand();
+    navigation.addListener('focus', () => {
+
+    });
+
   }, []);
 
   if (!fontsLoaded) {
@@ -226,10 +344,10 @@ export default function Login() {
             </Svg>
         </View> 
       </View>
-      <Text style={styles.textForgot}>Forgot Password?</Text>
+      <Text style={styles.textForgot} onPress={() => alert("You can login with your email")}>Forgot Password?</Text>
       <View style={styles.button}>
           <Text style={styles.buttonText}
-            onPress={Login}>LOGIN</Text>
+            onPress={() => Login()}>LOGIN</Text>
       </View>
       <View style={styles.IconConnect}>
         <View style={styles.Face}>
