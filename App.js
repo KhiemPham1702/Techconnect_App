@@ -22,6 +22,7 @@ import My_discount from './components/screens/My_discount';
 import My_assessment from './components/screens/My_assessment';
 import Histoty from './components/screens/History';
 import Tab_navigation from './components/navigation/Tab_navigation';
+import Rate from './components/screens/Rate';
 
 const App = () => {
 
@@ -54,6 +55,7 @@ const App = () => {
         <Stack.Screen name="My_assessment" component={My_assessment}/>
         <Stack.Screen name="History" component={Histoty}/>
         <Stack.Screen name="Tab_navigation" component={Tab_navigation}/>
+        <Stack.Screen name="Rate" component={Rate}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
+import { Recommend_data } from '../../Recommend/recommend_data';
 
 import { db, ref, set, child, get, onValue, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '../DAL/Database'
 import { connectStorageEmulator } from 'firebase/storage';
@@ -15,7 +16,7 @@ export var liked = [];
 export var brand = []
 export let Carts = []
 export var CartProduct = [];
-
+export var Recommend_data_cur_user = []
 
 
 export function reload(id){
@@ -68,6 +69,10 @@ export default function Login() {
   function HideAndShow(){
     setHide(!Hide);
   }
+
+  const getDataArray = (dataArray) => {
+    if(Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
+};
 
   function LoadCarts(ID) {
     const starCountRef = ref(db, "Cart/");
@@ -313,6 +318,7 @@ export default function Login() {
   };
   return (
     <View style={styles.container}>
+      <Recommend_data movie={route.params.paramKey.name} getDataArray={getDataArray} />
       <View style={StyleSheet.absoluteFill}>
         <Svg height={height} width={width}>
           <Image

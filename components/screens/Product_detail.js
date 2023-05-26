@@ -28,6 +28,7 @@ export default function Product_detail({ route }) {
     const onPress2 = () => setCount(prevCount => ((prevCount <= 1) ? (prevCount + 0) : (prevCount - 1)))
     const [slideAnimation] = useState(new Animated.Value(Dimensions.get('window').height));
     const navigation = useNavigation();
+    
     const slideUp = (text) => {
         setBuyOrCart(text)
         Animated.timing(slideAnimation, {
