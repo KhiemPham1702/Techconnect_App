@@ -17,6 +17,7 @@ export let Carts = []
 export var CartProduct = [];
 
 
+
 export function reload(id){
   const starCountRef = ref(db, "App_user/" + id);
   onValue(
@@ -61,6 +62,8 @@ export default function Login() {
   const [Hide, setHide] = useState(true);
 
   const [test, setTest] = useState(Carts)
+
+  const [product, setProduct] = useState([]);
 
   function HideAndShow(){
     setHide(!Hide);

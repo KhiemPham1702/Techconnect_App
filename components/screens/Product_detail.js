@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import Comment from '../task/comment';
 import Product from '../task/product';
+import {Recommend_data} from '../../Recommend/recommend_data';
 
 import { db, ref, set, child, get, onValue, remove } from '../DAL/Database'
 import { liked, LoadCarts, User, Carts, CartProduct } from '../screens/Login'
@@ -43,7 +44,9 @@ export default function Product_detail({ route }) {
         }).start(() => setIsVisible(false));
     };
 
-
+    const getDataArray = (dataArray) => {
+        if(Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
+    };
 
     const TypeProduct = {
         Laptop: 0,
@@ -454,6 +457,7 @@ export default function Product_detail({ route }) {
     };
     return (
         <View style={styles.container}>
+            <Recommend_data movie={route.params.paramKey.name} getDataArray={getDataArray} />
             <View>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <View height={40} width={40} marginLeft={14} marginTop={30}>

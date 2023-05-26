@@ -14,6 +14,7 @@ import color from '../../contains/color';
 import Product_review from '../task/product_review';
 import Brand from '../task/brand';
 import Product from '../task/product';
+import {Recommend_data} from '../../Recommend/recommend_data';
 
 import { db, ref, set, child, get, onValue } from '../DAL/Database'
 import { liked, User, brand, Carts, CartProduct } from '../screens/Login';
@@ -28,7 +29,7 @@ function LoadImage(e, i) {
         (snapshot) => {
             snapshot.forEach((childSnapshot) => {
                 const image = childSnapshot.val()
-                console.log(image)
+                // console.log(image)
                 if (image.product_ID == e.product_ID) {
                     e.image = image.image_Url
                     //console.log(image.image_Url)
@@ -47,12 +48,22 @@ export var ProductData = []
 
 export default function Home() {
     const childRef = useRef()
-    
+
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     const navigation = useNavigation();
 
     const [DATA, setDATA] = useState([]);
     const [imageBrand, setImageBrand] = useState([])
+
+    const user = {
+        id: 'abc',
+        movie: '',
+      };
+    
+    
+    const getDataArray = (dataArray) => {
+        if(Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
+    };
 
     function LoadProduct() {
         //console.log("Load product")
@@ -121,6 +132,8 @@ export default function Home() {
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
         Inter_Light: require('../../assets/fonts/Inter-Light.ttf'),
     });
+
+    
     useEffect(() => {
         async function prepare() {
             await SplashScreen.preventAutoHideAsync();
@@ -132,15 +145,18 @@ export default function Home() {
 
         })
 
+        
+
         navigation.addListener('focus', () => {
             //alert('Refreshed');
             LoadProduct();
-
+                    
 
             //CreateChildRef()
             //console.log(Carts);
+            console.log('--------------');
         });
-
+        
 
     }, []);
 
@@ -175,6 +191,7 @@ export default function Home() {
 
     return (
         <View style={styles.container}>
+            <Recommend_data movie={''} getDataArray={getDataArray} />
             <View style={StyleSheet.absoluteFill} marginLeft={15} marginTop={30} >
                 <Svg height={40} width={40}>
                     <Image

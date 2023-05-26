@@ -7,10 +7,18 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
+import {Recommend_data} from '../../Recommend/recommend_data';
+import { ProductService } from '../connect_recommend/ProductService';
 
+import { getDatabase} from "firebase/database";
+import { db, ref, set, child, get, onValue } from '../DAL/Database'
+import { liked, User, brand, Carts, CartProduct } from '../screens/Login';
 
 export default function Start() {
 
+
+  const [data, setData] = useState(null);
+  const [product, setProduct] = useState([]);
 
   const navigation = useNavigation();
   const { height, width } = Dimensions.get("window");
@@ -18,21 +26,37 @@ export default function Start() {
     Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
     Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
   });
-  useEffect(() => {
 
+  useEffect(() => {
     async function prepare() {
       await SplashScreen.preventAutoHideAsync();
     }
     prepare();
   }, []);
 
+  
+
   if (!fontsLoaded) {
     return undefined;
   } else {
     SplashScreen.hideAsync();
   };
+
+
+  const user = {
+    id: 'abc',
+    movie: 'ROG Mothership GZ700',
+  };
+
+
+  const getDataArray = (dataArray) => {
+    if(dataArray) console.log(dataArray);
+  };
+  
+
   return (
     <View style={styles.container}>
+      {/* <Recommend_data user={user} rating={rating} getDataArray={getDataArray} /> */}
       <View style={StyleSheet.absoluteFill}>
         <Svg height={height} width={width}>
           <Image
@@ -44,10 +68,11 @@ export default function Start() {
         </Svg>
       </View>
       <View style={styles.button}>
-          <Text style={styles.buttonText}
-            onPress={() => navigation.navigate('Login')}
-            >Get started</Text>
+        <Text style={styles.buttonText}
+          onPress={() => navigation.navigate('Login')}
+        >Get started</Text>
       </View>
+      
     </View>
   );
 }
