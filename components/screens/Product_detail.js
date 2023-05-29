@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Dimensions, TextInput, ScrollView, FlatList, TouchableOpacity, ImageBackground, Animated, Image } from 'react-native';
 import Svg, { Image2 } from "react-native-svg";
 import { useFonts } from 'expo-font';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import Icon3 from 'react-native-vector-icons/AntDesign';
@@ -12,11 +12,11 @@ import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import Comment from '../task/comment';
 import Product from '../task/product';
-import {Recommend_data} from '../../Recommend/recommend_data';
+import { Recommend_data } from '../../Recommend/recommend_data';
 
 import { db, ref, set, child, get, onValue, remove } from '../DAL/Database'
 import { liked, LoadCarts, User, Carts, CartProduct } from '../screens/Login'
-//import { CartProduct, LoadCartProduct } from '../screens/Home'
+import { ProductData } from '../screens/Home'
 
 const { width } = Dimensions.get('window');
 
@@ -28,7 +28,21 @@ export default function Product_detail({ route }) {
     const onPress2 = () => setCount(prevCount => ((prevCount <= 1) ? (prevCount + 0) : (prevCount - 1)))
     const [slideAnimation] = useState(new Animated.Value(Dimensions.get('window').height));
     const navigation = useNavigation();
-    
+
+
+    const [SimilarProduct, setSimilarProduct] = useState([])
+    const childRef = useRef()
+
+    function HandleSimilarProduct() {
+        recommendData.forEach((d) => {
+            let data = ProductData.find(element => element.name == d)
+
+            if(data != undefined )
+                setSimilarProduct((pre) => [...pre, data]);
+        })
+
+    }
+
     const slideUp = (text) => {
         setBuyOrCart(text)
         Animated.timing(slideAnimation, {
@@ -46,7 +60,7 @@ export default function Product_detail({ route }) {
     };
 
     const getDataArray = (dataArray) => {
-        if(Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
+        if (Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
     };
 
     const TypeProduct = {
@@ -114,9 +128,12 @@ export default function Product_detail({ route }) {
     const [ProductDetail, setProductDetail] = useState([]);
     const [Field, setField] = useState([]);
     const [Type, setType] = useState();
+    const [recommendData, setRecommendData] = useState([]);
 
     useEffect(() => {
-
+        console.log("recommend Data" + recommendData)
+        if(recommendData.length > 0)
+            HandleSimilarProduct()
         //laptop
         let starCountRef = ref(db, "Laptop/");
         setProductDetail([]);
@@ -241,7 +258,7 @@ export default function Product_detail({ route }) {
 
         return () => { }
 
-    }, [])
+    }, [recommendData])
 
     const PaymentData = new Array({
         "ID": route.params.paramKey.ID,
@@ -253,92 +270,8 @@ export default function Product_detail({ route }) {
         "SaleOff": route.params.SaleOff
     });
 
-    const DATA = [[//lap
-        { id: "1", title: "CPU" },
-        { id: "2", title: "Graphic Card" },
-        { id: "3", title: "RAM" },
-        { id: "4", title: "Storage Drive" },
-        { id: "5", title: "Screen" },
-        { id: "6", title: "OS" },
-        { id: "7", title: "Lan" },
-        { id: "8", title: "Communication Port" },
-        { id: "9", title: "Keyboard" },
-        { id: "10", title: "Battery" },
-    ],
-    [//headphone
-        { id: "1", title: "Type" },
-        { id: "2", title: "Connection Type" },
-        { id: "3", title: "Connection Standard" },
-        { id: "4", title: "Microphone" },
-        { id: "5", title: "Impedance" },
-        { id: "6", title: "Frequency" },
-    ],
-    [//keyboard
-        { id: "1", title: "Type" },
-        { id: "2", title: "Led" },
-    ],
-    [//mouse
-        { id: "1", title: "Type" },
-        { id: "2", title: "Connection Type" },
-        { id: "3", title: "Connection Standard" },
-        { id: "4", title: "Microphone" },
-        { id: "5", title: "Impedance" },
-        { id: "6", title: "Frequency" },
-    ],
-    [//gamepad
-        { id: "1", title: "Type" },
-    ],
-    ];
-    const DATA2 = [
-        { id: "1", title: "Logitech" },
-        { id: "2", title: "24 months" },
-        { id: "3", title: "G733 LightSpeed Wireless" },
-        { id: "4", title: "White" },
-        { id: "5", title: "Over-ear" },
-        { id: "6", title: "Wireless" },
-        { id: "7", title: "Reciever USB type A" },
-        { id: "8", title: "Removable" },
-        { id: "9", title: "1kHz 32Ohm" },
-        { id: "10", title: "20Hz - 20KHz" },
-    ];
-    const DATA3 = [
-        {
-            id: '1',
-            title: 'Item 1',
-        },
-        {
-            id: '2',
-            title: 'Item 2',
-        },
-        {
-            id: '3',
-            title: 'Item 3',
-        },
-        {
-            id: '4',
-            title: 'Item 1',
-        },
-        {
-            id: '5',
-            title: 'Item 2',
-        },
-        {
-            id: '6',
-            title: 'Item 3',
-        },
-        {
-            id: '4',
-            title: 'Item 1',
-        },
-        {
-            id: '5',
-            title: 'Item 2',
-        },
-        {
-            id: '6',
-            title: 'Item 3',
-        },
-    ];
+    
+    
     const DATA4 = [
         {
             id: '1',
@@ -408,7 +341,7 @@ export default function Product_detail({ route }) {
             console.error(error);
         });
 
-        const carts = new Array({"ID": unique})
+        const carts = new Array({ "ID": unique })
         //// buy now ////
         if (BuyOrCart == 'Buy Now') {
             navigation.navigate('Payment', {
@@ -426,7 +359,8 @@ export default function Product_detail({ route }) {
             product_Type: "",
             image: route.params.listImage.at(0),
             discount_ID: route.params.paramKey.discount_ID,
-            SaleOff: route.params.SaleOff
+            SaleOff: route.params.SaleOff,
+            product: route.params.paramKey
         })
 
         const starCountRef = ref(db, "Product/" + route.params.paramKey.ID);
@@ -456,9 +390,28 @@ export default function Product_detail({ route }) {
             </View>
         )
     };
+
+    function checkLike(id) {
+
+        let isLiked = false;
+        //console.log(liked)
+        liked.forEach((e) => {
+            if (e.product_ID == id) {
+                //console.log(e)
+                isLiked = true;
+
+            }
+        })
+
+        //console.log(isLiked) 
+
+        return { "islike": isLiked, "id": (User.ID + id) }
+    }
+
+
     return (
         <View style={styles.container}>
-            <Recommend_data movie={route.params.paramKey.name} getDataArray={getDataArray} />
+            <Recommend_data movie={route.params.paramKey.name} getDataArray={setRecommendData} />
             <View>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <View height={40} width={40} marginLeft={14} marginTop={30}>
@@ -560,11 +513,16 @@ export default function Product_detail({ route }) {
                         <View style={styles.line} />
                         <Text style={styles.section}>Similar products</Text>
                         <FlatList marginTop={10}
-                            showsVerticalScrollIndicator={false}
                             numColumns={2}
-                            data={DATA3}
                             nestedScrollEnabled={true}
-                            renderItem={renderProduct}>
+                            showsVerticalScrollIndicator={false}
+                            data={SimilarProduct}
+                            renderItem={({item, index}) =>
+                                <Product data={item} like={checkLike(item.ID)}
+                                    onRef={ref => (this.parentReference = ref)}
+                                    ref={childRef}
+                                />
+                            }>
                         </FlatList>
                     </ScrollView>
                     <View style={styles.bottom_view}>

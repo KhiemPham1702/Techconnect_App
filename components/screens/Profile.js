@@ -85,12 +85,12 @@ export default function Profile() {
                         source={require('../image/girl.jpg')}
                     />               
                 </View>
-                <View style={styles.avatar_view2}>
+                {/* <View style={styles.avatar_view2}>
                     <Image
                         style={styles.image2}
                         source={require('../image/camera.png')}
                     />               
-                </View>
+                </View> */}
                   <Text style={styles.name_user} marginTop={10}>{currentUser.first_Name + ' ' + currentUser.last_Name}</Text>
                   <Text style={styles.id_user}>{'ID: ' + currentUser.ID}</Text>
                 <View style={styles.avatar_view3}>

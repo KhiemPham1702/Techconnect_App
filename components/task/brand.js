@@ -28,8 +28,13 @@ const brand = (props) => {
     } else {
         SplashScreen.hideAsync();
     };
+
+    function BrandClicked() {
+        props.parentReference(props.brand.product_ID)
+    }
+
   return (
-    <TouchableOpacity>
+      <TouchableOpacity onPress={BrandClicked}>
           <View style={styles.brand}>
               <Image
                   //source={require(('../image/apple.png'))}

@@ -14,12 +14,14 @@ import color from '../../contains/color';
 import Product_review from '../task/product_review';
 import Brand from '../task/brand';
 import Product from '../task/product';
-import {Recommend_data} from '../../Recommend/recommend_data';
+import { Recommend_data } from '../../Recommend/recommend_data';
 
 import { db, ref, set, child, get, onValue } from '../DAL/Database'
 import { liked, User, brand, Carts, CartProduct } from '../screens/Login';
 
 export { CartProduct }
+
+var test = [1, 2, 3, 4, 5]
 
 function LoadImage(e, i) {
     const starCountRef = ref(db, "Image/");
@@ -55,14 +57,15 @@ export default function Home() {
     const [DATA, setDATA] = useState([]);
     const [imageBrand, setImageBrand] = useState([])
 
-    const user = {
-        id: 'abc',
-        movie: '',
-      };
-    
-    
+
+    const [Category, setCategory] = useState("")
+    const [ProductBrand, setProductBrand] = useState("")
+
+    const [recommendData, setRecommendData] = useState([]);
+
+
     const getDataArray = (dataArray) => {
-        if(Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
+        if (Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
     };
 
     function LoadProduct() {
@@ -75,8 +78,11 @@ export default function Home() {
             (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     let data = childSnapshot.val()
-                    setDATA((pre) => [...pre, data]);
+
                     ProductData.push(data);
+
+                    if (recommendData.includes(data.ID))
+                        setDATA((pre) => [...pre, data]);
 
                     if (Carts.length != CartProduct.length) {
 
@@ -133,7 +139,7 @@ export default function Home() {
         Inter_Light: require('../../assets/fonts/Inter-Light.ttf'),
     });
 
-    
+
     useEffect(() => {
         async function prepare() {
             await SplashScreen.preventAutoHideAsync();
@@ -145,20 +151,23 @@ export default function Home() {
 
         })
 
-        
-
-        navigation.addListener('focus', () => {
-            //alert('Refreshed');
+        if (recommendData.length > 0) {
+            console.log(recommendData);
             LoadProduct();
-                    
+        }
 
-            //CreateChildRef()
-            //console.log(Carts);
-            console.log('--------------');
-        });
-        
+        // navigation.addListener('focus', () => {
+        //     //alert('Refreshed');
+        //     LoadProduct();
 
-    }, []);
+
+        //     //CreateChildRef()
+        //     //console.log(Carts);
+        //     console.log('--------------');
+        // });
+
+
+    }, [recommendData]);
 
 
 
@@ -188,10 +197,48 @@ export default function Home() {
         return { "islike": isLiked, "id": (User.ID + id) }
     }
 
+    function FilterCategory(category) {
+        if (category == Category) {
+            setCategory("")
+            Filter("", ProductBrand)
+        }
+        else {
+            setCategory(category)
+            Filter(category, ProductBrand)
+        }
+
+    }
+
+    function FilterBrand(brandName) {
+        if (brandName == ProductBrand) {
+            setProductBrand("")
+            Filter(Category, "")
+        }
+        else {
+            setProductBrand(brandName)
+            Filter(Category, brandName)
+        }
+    }
+
+    function Filter(category, brandName) {
+        let dataFilter = [];
+
+        for (let i = 0; i < test.length; i++) {
+
+            const e = ProductData.find(data => data.ID == test.at(i))
+            console.log(e)
+            if (e
+                && (category == "" || (category == e.category_ID))
+                && (brandName == "" || (brandName == e.brand_ID)))
+                dataFilter.push(e);
+        }
+
+        setDATA(dataFilter)
+    }
 
     return (
         <View style={styles.container}>
-            <Recommend_data movie={''} getDataArray={getDataArray} />
+            <Recommend_data movie={''} getDataArray={setRecommendData} />
             <View style={StyleSheet.absoluteFill} marginLeft={15} marginTop={30} >
                 <Svg height={40} width={40}>
                     <Image
@@ -234,8 +281,12 @@ export default function Home() {
                         pagingEnabled
                         horizontal
                         showsVerticalScrollIndicator={false}
-                        data={DATA5}
-                        renderItem={renderItem2}>
+                        data={ProductData}
+                        renderItem={(item) =>
+                            <Product_review
+                                data={item}
+                            />
+                        }>
                     </FlatList>
                 </View>
                 <View style={styles.Choose}>
@@ -246,7 +297,9 @@ export default function Home() {
                                     href={require('../image/laptop.png')}
                                     height={30}
                                     width={30}
-                                    preserveAspectRatio="xMidYMid slice" />
+                                    preserveAspectRatio="xMidYMid slice"
+                                    onPress={() => FilterCategory("Laptop")}
+                                />
                             </Svg>
                         </View>
                         <Text style={styles.Circle_text} marginLeft={3}>Laptop</Text>
@@ -258,7 +311,9 @@ export default function Home() {
                                     href={require('../image/headphone.png')}
                                     height={35}
                                     width={35}
-                                    preserveAspectRatio="xMidYMid slice" />
+                                    preserveAspectRatio="xMidYMid slice"
+                                    onPress={() => FilterCategory("Headphone")}
+                                />
                             </Svg>
                         </View>
                         <Text style={styles.Circle_text} marginLeft={-11}>Headphone</Text>
@@ -270,7 +325,9 @@ export default function Home() {
                                     href={require('../image/mouse.png')}
                                     height={30}
                                     width={30}
-                                    preserveAspectRatio="xMidYMid slice" />
+                                    preserveAspectRatio="xMidYMid slice"
+                                    onPress={() => FilterCategory("Mouse")}
+                                />
                             </Svg>
                         </View>
                         <Text style={styles.Circle_text} marginLeft={6}>Mouse</Text>
@@ -282,7 +339,9 @@ export default function Home() {
                                     href={require('../image/keyboard.png')}
                                     height={30}
                                     width={30}
-                                    preserveAspectRatio="xMidYMid slice" />
+                                    preserveAspectRatio="xMidYMid slice"
+                                    onPress={() => FilterCategory("Keyboard")}
+                                />
                             </Svg>
                         </View>
                         <Text style={styles.Circle_text} marginLeft={-3}>Keyboard</Text>
@@ -294,7 +353,9 @@ export default function Home() {
                                     href={require('../image/gamepad.png')}
                                     height={30}
                                     width={30}
-                                    preserveAspectRatio="xMidYMid slice" />
+                                    preserveAspectRatio="xMidYMid slice"
+                                    onPress={() => FilterCategory("Gamepad")}
+                                />
                             </Svg>
                         </View>
                         <Text style={styles.Circle_text} marginLeft={-5}>Gamepad</Text>
@@ -318,7 +379,11 @@ export default function Home() {
                         showsVerticalScrollIndicator={false}
                         data={imageBrand}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => <Brand brand={item} />}
+                        renderItem={({ item }) =>
+                            <Brand brand={item}
+                                onRef={ref => (this.parentReference = ref)}
+                                parentReference={FilterBrand.bind(this)}
+                            />}
                     >
                     </FlatList>
                 </View>

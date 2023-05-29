@@ -6,7 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
-const product_review = () => {
+const product_review = (props) => {
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -17,6 +17,8 @@ const product_review = () => {
         await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+
+        console.log(props.data)
     }, []);
 
     if (!fontsLoaded) {
@@ -28,10 +30,10 @@ const product_review = () => {
       <View marginLeft={15}>
           <ImageBackground
               styles={styles.product_Re}
-              source={require('../image/4_zu_3_gz700_1.png')} >
+              source={{ uri: props.data.item.thumbnail }} >
               <View height={154} width={295}>
                   <View style={styles.overlay} />
-                  <Text style={styles.product_Re_text}>Premium Gaming Laptop</Text>
+                  <Text style={styles.product_Re_text}>{props.data.item.name}</Text>
               </View>
           </ImageBackground>
       </View>

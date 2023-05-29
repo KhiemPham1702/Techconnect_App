@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as SplashScreen from 'expo-splash-screen';
 
+import { User } from '../screens/Login';
 import color from '../../contains/color';
 
-const user_commented = () => {
+const user_commented = (props) => {
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -17,6 +18,9 @@ const user_commented = () => {
         await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+
+        //console.log(props.data)
+
     }, []);
 
     if (!fontsLoaded) {
@@ -31,12 +35,12 @@ const user_commented = () => {
                     <View  style={styles.avatar_view3}>
                         <Image
                             style={styles.image3}
-                            source={require('../image/3.png')}
+                            source={{ uri: props.data.item.product.thumbnail }}
                         />               
                     </View>
                     <View marginTop={5} marginLeft={10}>
-                        <Text style={styles.pro_name}>Logitech G733 LIGHTSPEED Wireless</Text>
-                        <Text style={styles.pro_color}>Color: White</Text>
+                        <Text style={styles.pro_name}>{props.data.item.product.name}</Text>
+                        <Text style={styles.pro_color}>Color: {props.data.item.product.color}</Text>
                     </View>
                 </View>
             </View>
@@ -51,15 +55,15 @@ const user_commented = () => {
                     />               
                 </View>
                 <View >
-                    <Text style={styles.user_name}>@username001</Text>
+                    <Text style={styles.user_name}>{User.first_Name + " " + User.last_Name}</Text>
                     <View style={styles.star} marginVertical={5}>
-                        <Icon name="star" size={15} color={color.yellow_2} />
-                        <Icon name="star" size={15} color={color.yellow_2} marginLeft={5}/>
-                        <Icon name="star" size={15} color={color.yellow_2} marginLeft={5}/>
-                        <Icon name="star" size={15} color={color.yellow_2} marginLeft={5}/>
-                        <Icon name="star-o" size={15} color={color.yellow_2} marginLeft={5}/>                      
+                        <Icon name={props.data.item.Rate >= 1 ? 'star' : 'star-o'} size={15} color={color.yellow_2} />
+                        <Icon name={props.data.item.Rate >= 2 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>
+                        <Icon name={props.data.item.Rate >= 3 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>
+                        <Icon name={props.data.item.Rate >= 4 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>
+                        <Icon name={props.data.item.Rate >= 5 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>                      
                     </View>
-                    <Text style={styles.user_name}>Nice product and very good quality</Text>
+                    <Text style={styles.user_name}>{props.data.item.Detail}</Text>
                     <View  style={styles.image_review}>
                         <Image
                             style={styles.image2}

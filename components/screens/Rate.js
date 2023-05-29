@@ -8,18 +8,26 @@ import { useNavigation } from '@react-navigation/native';
 import color from '../../contains/color';
 import Product_bought from '../task/product_bought';
 
-export default function Rate() {
+import { db, ref, set, child, get, onValue, auth } from '../DAL/Database'
+import {User} from '../screens/Login'
+
+export default function Rate({ route }) { // route.params.
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
         Inter_Light: require('../../assets/fonts/Inter-Light.ttf'),
     });
+
+    const [RateStar, setStarRating] = useState(4)
+    const [UserComment, setUserComment] = useState("")
+
     useEffect(() => {
         async function prepare() {
-        await SplashScreen.preventAutoHideAsync();
+            await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+        console.log(route.params.data)
     }, []);
 
     if (!fontsLoaded) {
@@ -28,46 +36,82 @@ export default function Rate() {
         SplashScreen.hideAsync();
     };
 
-    return(
+    function CreateComment(productID) {
+        
+        set(ref(db, 'User_comment/' + (User.ID + productID)), {
+            ID: (User.ID + productID),
+            Detail: UserComment,
+            Product_ID: productID,
+            Rate: RateStar,
+            User_ID: User.ID,
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+
+    function RateProduct() {
+        if(route.params.data.length > 0) {
+            route.params.data.forEach((data) => {
+                CreateComment(data.ID)
+            })
+        }
+
+        navigation.navigate("Tab_navigation")
+    }
+
+    return (
         <View style={styles.container}>
             <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
                 <Svg height={40} width={40}  >
-                <Image 
-                    onPress={() => navigation.goBack()}
-                        href={require('../image/icon_back_white.png')} 
-                        height={40} 
+                    <Image
+                        onPress={() => navigation.navigate("Tab_navigation")}
+                        href={require('../image/icon_back_white.png')}
+                        height={40}
                         width={40}
-                        preserveAspectRatio="xMidYMid slice"/>
+                        preserveAspectRatio="xMidYMid slice" />
                 </Svg>
-            </View> 
+            </View>
             <Text style={styles.title} marginLeft={132} marginTop={80}>Rate Product</Text>
             <Text style={styles.title2} marginLeft={37} marginTop={20}>Your rating will be displayed in the product's reviews</Text>
             <View style={styles.star} marginTop={30} marginLeft={70}>
-                <Icon name="star" size={45} color={color.yellow_2} />
-                <Icon name="star" size={45} color={color.yellow_2} marginLeft={15} />
-                <Icon name="star" size={45} color={color.yellow_2} marginLeft={15} />
-                <Icon name="star" size={45} color={color.yellow_2} marginLeft={15} />
-                <Icon name="star-o" size={45} color={color.yellow_2} marginLeft={15} />
+                <Icon name={RateStar >= 1 ? 'star' : 'star-o'}
+                    onPress={() => setStarRating(1)}
+                    size={45} color={color.yellow_2} />
+                <Icon name={RateStar >= 2 ? 'star' : 'star-o'}
+                    onPress={() => setStarRating(2)}
+                    size={45} color={color.yellow_2} marginLeft={15} />
+                <Icon name={RateStar >= 3 ? 'star' : 'star-o'}
+                    onPress={() => setStarRating(3)}
+                    size={45} color={color.yellow_2} marginLeft={15} />
+                <Icon name={RateStar >= 4 ? 'star' : 'star-o'}
+                    onPress={() => setStarRating(4)}
+                    size={45} color={color.yellow_2} marginLeft={15} />
+                <Icon name={RateStar >= 5 ? 'star' : 'star-o'}
+                    onPress={() => setStarRating(5)}
+                    size={45} color={color.yellow_2} marginLeft={15} />
             </View>
             <View style={styles.camera}>
                 <View style={StyleSheet.absoluteFill} marginLeft={30} marginTop={18}>
                     <Svg height={35} width={40}  >
-                    <Image 
-                        onPress={() => navigation.goBack()}
-                            href={require('../image/ion_camera-sharp.png')} 
-                            height={40} 
+                        <Image
+                            // onPress={() => navigation.goBack()}
+                            href={require('../image/ion_camera-sharp.png')}
+                            height={40}
                             width={40}
-                            preserveAspectRatio="xMidYMid slice"/>
+                            preserveAspectRatio="xMidYMid slice" />
                     </Svg>
-                </View> 
+                </View>
             </View>
             <TextInput
                 multiline={true}
                 style={styles.usernametext}
                 placeholder="Please share what you like about this product"
-                placeholderTextColor={color.white}/>
+                placeholderTextColor={color.white} 
+                onChangeText={newText => setUserComment(newText)}
+                defaultValue={UserComment}
+                />
             <View style={styles.button2}>
-                <Text style={styles.buttonText2}>Send</Text>
+                <Text style={styles.buttonText2} onPress={RateProduct}>Send</Text>
             </View>
         </View>
     )

@@ -6,6 +6,9 @@ import axios from 'axios';
 import { ProductService } from '../components/connect_recommend/ProductService';
 import { User } from '../components/screens/Login';
 
+// import { setData } from '../components/connect_recommend/actions';
+// import { connect } from 'react-redux';
+
 export class Recommend_data extends React.Component {
     state = {
         data: [],
@@ -38,39 +41,27 @@ export class Recommend_data extends React.Component {
                 .then(response => response.json())
                 .then(result => {
                   const parsedData = JSON.parse(result)
-                  this.setState({data: parsedData})
+                  this.setState({ data: parsedData }, () => {
+                    this.props.getDataArray(this.state.data);
+                });
                 })
                 .catch(error => {
                   console.error(error);
                 });
               });
+              
           };
         fetchData();
+    };
 
-        // axios.post('http://10.0.2.2:5000/sever/send-data', {
-        //     user: user,
-        //     rating: rating,
-        //     product: this.state.product,
-        // })
-        // .then(response => {
-        //     console.log(response.data);
-        //     return fetch('http://10.0.2.2:5000/sever/get-data');
-        // })
-        // .then(response => response.json())
-        // .then(result => {
-        //     const parsedData = JSON.parse(result)
-        //     this.setState({data: parsedData})
-        // })
-        // .catch(error => {
-        //     console.error(error);
-        // });
-    }
+    getData = () => {
+      return this.state.data;
+    };
 
+    
     render() {
-        const { data } = this.state.data;
-        const dataArray = Object.values(this.state.data);
-        this.props.getDataArray(this.state.data);
-
+        // const dataArray = Object.values(this.state.data);
+        // this.props.getDataArray(dataArray);
         // const dataElements = dataArray.map((item, index) => (
         //     console.log(item)
         // ));

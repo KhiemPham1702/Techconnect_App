@@ -17,9 +17,10 @@ export var brand = []
 export let Carts = []
 export var CartProduct = [];
 export var Recommend_data_cur_user = []
+export var FullCartOfUser = []
 
 
-export function reload(id){
+export function reload(id) {
   const starCountRef = ref(db, "App_user/" + id);
   onValue(
     starCountRef,
@@ -66,13 +67,13 @@ export default function Login() {
 
   const [product, setProduct] = useState([]);
 
-  function HideAndShow(){
+  function HideAndShow() {
     setHide(!Hide);
   }
 
   const getDataArray = (dataArray) => {
-    if(Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
-};
+    if (Array.isArray(dataArray) && dataArray.length > 0) console.log(dataArray);
+  };
 
   function LoadCarts(ID) {
     const starCountRef = ref(db, "Cart/");
@@ -81,14 +82,18 @@ export default function Login() {
     onValue(
       starCountRef,
       (snapshot) => {
-        //Carts = []
+        Carts = []
+        FullCartOfUser = []
         snapshot.forEach((childSnapshot) => {
           const cart = childSnapshot.val()
           //console.log(cart.user_ID)
-          if (cart.order_ID == "" && cart.user_ID == ID) {
-            setTest((pre) => [...pre, cart]);
-            Carts.push(cart)
-
+          if (cart.user_ID == ID) {
+            if(cart.order_ID == "") {
+              setTest((pre) => [...pre, cart]);
+              Carts.push(cart)
+            }
+            else 
+              FullCartOfUser.push(cart)
             // if(Carts.length > 1) {
             //   Carts.sort(function(a,b){return a.product_ID - b.product_ID})
             // }
@@ -101,7 +106,7 @@ export default function Login() {
       }
     );
   }
- 
+
   function LoadBrand() {
     //console.log("Load product")
     const starCountRef = ref(db, "Brand/");
@@ -121,17 +126,17 @@ export default function Login() {
     );
   }
 
-  function CheckAccount(id){
+  function CheckAccount(id) {
     starCountRef = ref(db, "App_user/" + id);
     onValue(
       starCountRef,
       (snapshot) => {
-        if(id == ""){
+        if (id == "") {
           snapshot.forEach((childSnapshot) => {
             let user = childSnapshot.val();
             if (user && user['email'] == Email && user['password'] == Password) {
               User = user;
-              
+
 
               CartProduct = []
               Carts = []
@@ -162,14 +167,14 @@ export default function Login() {
   }
 
 
-  function CreateAccountWithEmail(){
+  function CreateAccountWithEmail() {
     createUserWithEmailAndPassword(auth, Email, Password)
       .then((userCredential) => {
         console.log("Create User")
         // Signed in 
         const user = userCredential.user;
         //console.log(user.uid)
-        
+
         set(ref(db, 'App_user/' + user.uid), {
           ID: user.uid,
           avatar: "",
@@ -190,7 +195,7 @@ export default function Login() {
           //       User = loadUser;
           //       console.log(loadUser)
           //       navigation.navigate('Tab_navigation')
-              
+
           //   },
           //   {
           //     onlyOnce: true,
@@ -233,24 +238,8 @@ export default function Login() {
 
   }
 
-  function Login(){
+  function Login() {
     CheckAccount("");
-    // starCountRef = ref(db, "App_user/");
-    // onValue(
-    //   starCountRef,
-    //   (snapshot) => {
-    //     snapshot.forEach((childSnapshot) => {
-    //       let user = childSnapshot.val();
-    //       if (user && user['email'] == Email && user['password'] == Password) {
-    //         User = user;
-    //         navigation.navigate('Tab_navigation')
-    //       }
-    //     })
-    //   },
-    //   {
-    //     onlyOnce: true,
-    //   }
-    // )
 
     signInWithEmailAndPassword(auth, Email, Password)
       .then((userCredential) => {
@@ -258,37 +247,13 @@ export default function Login() {
         console.log("Sign in")
         const user = userCredential.user;
 
-        CheckAccount(user.ID);
+        CheckAccount(user.uid);
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message; 
+        const errorMessage = error.message;
       });
 
-    // const starCountRef = ref(db, "App_user/" + Email);
-    // onValue(
-    //   starCountRef,
-    //   (snapshot) => {
-    //     //console.log(snapshot)
-    //     if(Email == "" || snapshot.size == 0)
-    //       alert('Please, fill with correct Email');
-    //     else{
-    //       const user = snapshot.toJSON();
-    //       if (Password == user.password && Email == user.username) {
-    //         console.log("Login successfully")
-    //         User = user;
-    //         console.log(User);
-    //         navigation.navigate('Tab_navigation')
-    //       }
-    //       else 
-    //         alert("Wrong password")
-    //     }
-        
-    //   },
-    //   {
-    //     onlyOnce: true,
-    //   }
-    // );
 
   }
 
@@ -318,7 +283,7 @@ export default function Login() {
   };
   return (
     <View style={styles.container}>
-      <Recommend_data movie={route.params.paramKey.name} getDataArray={getDataArray} />
+      {/* <Recommend_data movie={route.params.paramKey.name} getDataArray={getDataArray} /> */}
       <View style={StyleSheet.absoluteFill}>
         <Svg height={height} width={width}>
           <Image
@@ -329,59 +294,59 @@ export default function Login() {
           />
         </Svg>
       </View>
-      <TextInput 
+      <TextInput
         style={styles.usernametext}
         placeholder="Email"
         placeholderTextColor={color.white}
         onChangeText={(email) => setEmail(email)}
-        />
+      />
       <View style={styles.passtext}>
-        <TextInput 
-            style={styles.passhinttext}
-            placeholder="Password"
-            placeholderTextColor={color.white}
-            onChangeText={(password) => setPassword(password)}
-            secureTextEntry={Hide}
-            />   
-            <View style={StyleSheet.absoluteFill} marginLeft={280} marginTop={12}>
-                <Svg height={40} width={40}  onPress={HideAndShow}>
-                <Image 
-                    href={require('../image/clarity_eye-show-line.png')} 
-                    height={40} 
-                    width={40}
-                    preserveAspectRatio="xMidYMid slice"/>
-            </Svg>
-        </View> 
+        <TextInput
+          style={styles.passhinttext}
+          placeholder="Password"
+          placeholderTextColor={color.white}
+          onChangeText={(password) => setPassword(password)}
+          secureTextEntry={Hide}
+        />
+        <View style={StyleSheet.absoluteFill} marginLeft={280} marginTop={12}>
+          <Svg height={40} width={40} onPress={HideAndShow}>
+            <Image
+              href={require('../image/clarity_eye-show-line.png')}
+              height={40}
+              width={40}
+              preserveAspectRatio="xMidYMid slice" />
+          </Svg>
+        </View>
       </View>
       <Text style={styles.textForgot} onPress={() => alert("You can login with your email")}>Forgot Password?</Text>
       <View style={styles.button}>
-          <Text style={styles.buttonText}
-            onPress={() => Login()}>LOGIN</Text>
+        <Text style={styles.buttonText}
+          onPress={() => Login()}>LOGIN</Text>
       </View>
       <View style={styles.IconConnect}>
         <View style={styles.Face}>
-            <Svg height={35} width={35}  >
-                    <Image 
-                        href={require('../image/facebook.png')} 
-                        height={35} 
-                        width={35}
-                        preserveAspectRatio="xMidYMid slice"/>
-                </Svg>
+          <Svg height={35} width={35}  >
+            <Image
+              href={require('../image/facebook.png')}
+              height={35}
+              width={35}
+              preserveAspectRatio="xMidYMid slice" />
+          </Svg>
         </View>
         <View style={styles.Mail}>
           <Svg height={35} width={35} onPress={CreateAccountWithEmail}>
-                    <Image 
-                        href={require('../image/email.png')} 
-                        height={35} 
-                        width={35}
-                        preserveAspectRatio="xMidYMid slice"/>
-                </Svg>
+            <Image
+              href={require('../image/email.png')}
+              height={35}
+              width={35}
+              preserveAspectRatio="xMidYMid slice" />
+          </Svg>
         </View>
       </View>
       <View style={styles.Textbottom}>
         <Text style={styles.text}>Not a member?</Text>
-        <Text style={styles.SignUpChange} 
-            onPress={() => navigation.navigate('SignUp')}>SignUp</Text>
+        <Text style={styles.SignUpChange}
+          onPress={() => navigation.navigate('SignUp')}>SignUp</Text>
       </View>
     </View>
   );
@@ -431,7 +396,7 @@ const styles = StyleSheet.create({
     paddingLeft: 23,
     justifyContent: 'center',
     marginHorizontal: 33,
-    marginVertical: 22,  
+    marginVertical: 22,
 
     borderColor: color.white,
     borderRadius: 12,
@@ -475,7 +440,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontFamily: 'Inter_Medium',
   },
-  SignUpChange:{
+  SignUpChange: {
     marginLeft: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -490,7 +455,7 @@ const styles = StyleSheet.create({
     marginTop: 69,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
   },
   Face: {
     height: 50,
@@ -500,7 +465,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginRight: 37,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
   },
   Mail: {
     height: 50,
@@ -509,6 +474,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 2,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
   }
 });

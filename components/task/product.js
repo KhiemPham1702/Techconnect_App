@@ -54,13 +54,16 @@ const product = (props) => {
                 starCountRef,
                 (snapshot) => {
                     let d = snapshot.val()
-                    let date = new Date(d.expirationDate)
-                    if (d != undefined && (isNaN(date) || date >= new Date())) {
-                        let sale = (props.data.price * (100 - d.ratio) / 100)
-                        setSaleOff(sale); 
-                        setRatio(d.ratio)
-                        
-                        //console.log(sale)
+                    if(d != undefined) {
+
+                        let date = new Date(d.expirationDate)
+                        if ((isNaN(date) || date >= new Date())) {
+                            let sale = (props.data.price * (100 - d.ratio) / 100)
+                            setSaleOff(sale);
+                            setRatio(d.ratio)
+
+                            //console.log(sale)
+                        }
                     }
                 },
                 {
@@ -103,7 +106,7 @@ const product = (props) => {
 
         LoadSaleOff(props.data.discount_ID);
         LoadImageOfProduct();
-
+        console.log(props.data)
         //console.log("Hello")
     }, [props]);
 

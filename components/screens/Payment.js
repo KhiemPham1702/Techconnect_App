@@ -145,12 +145,13 @@ export default function Payment({ route }) {
     }
 
     function CreateOrder(id) {
+        const date = new Date()
         set(ref(db, 'Order/' + id), {
             ID: id,
             user_ID: User.ID,
-            order_date: new Date(),
+            order_date: date.toString(),
             order_status: 'Delivering',
-            order_total: Quantity
+            order_total: Total
         }).catch((error) => {
             console.error(error);
         });
@@ -207,7 +208,9 @@ export default function Payment({ route }) {
                     console.log(e.ID);
                 })
                 //LoadCartProduct()
-                navigation.navigate('Tab_navigation')
+                navigation.navigate('Rate', {
+                    data: route.params.productData,
+                })
                 alert("Pay by cash.")
             }
             //// Pay by Momo ////
