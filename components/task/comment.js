@@ -6,7 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 
-const comment = () => {
+const comment = (props) => {
     const [fontsLoaded] = useFonts({
         Inter_SemiBold: require('../../assets/fonts/Inter-SemiBold.ttf'),
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
@@ -17,6 +17,8 @@ const comment = () => {
         await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+
+        console.log(props.review)
     }, []);
 
     if (!fontsLoaded) {
@@ -33,15 +35,15 @@ const comment = () => {
                 />               
             </View>
             <View >
-                <Text style={styles.user_name}>@username001</Text>
+                <Text style={styles.user_name}>{props.review.User_ID}</Text>
                 <View style={styles.star} marginVertical={5}>
-                    <Icon name="star" size={15} color={color.yellow_2} />
-                    <Icon name="star" size={15} color={color.yellow_2} marginLeft={5}/>
-                    <Icon name="star" size={15} color={color.yellow_2} marginLeft={5}/>
-                    <Icon name="star" size={15} color={color.yellow_2} marginLeft={5}/>
-                    <Icon name="star-o" size={15} color={color.yellow_2} marginLeft={5}/>                      
+                    <Icon name={props.review.Rate >= 1 ? 'star' : 'star-o'} size={15} color={color.yellow_2} />
+                    <Icon name={props.review.Rate >= 2 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>
+                    <Icon name={props.review.Rate >= 3 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>
+                    <Icon name={props.review.Rate >= 4 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>
+                    <Icon name={props.review.Rate >= 5 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5}/>                      
                 </View>
-                <Text style={styles.user_name}>Nice product and very good quality</Text>
+                <Text style={styles.user_name}>{props.review.Detail}</Text>
                 <View  style={styles.image_review}>
                     <Image
                         style={styles.image2}

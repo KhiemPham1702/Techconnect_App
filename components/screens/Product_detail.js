@@ -130,10 +130,10 @@ export default function Product_detail({ route }) {
     const [Type, setType] = useState();
     const [recommendData, setRecommendData] = useState([]);
 
-    useEffect(() => {
-        console.log("recommend Data" + recommendData)
-        if(recommendData.length > 0)
-            HandleSimilarProduct()
+    const [UserReview, setUserReview] = useState([])
+    const [AverageReview, setAverageReview] = useState(0)
+
+    function LoadProductDetail() {
         //laptop
         let starCountRef = ref(db, "Laptop/");
         setProductDetail([]);
@@ -144,14 +144,14 @@ export default function Product_detail({ route }) {
                 snapshot.forEach((childSnapshot) => {
                     let da = childSnapshot.val();
                     if (da && da['product_ID'] == route.params.paramKey.ID) {
-                        console.log(1);
+                        //console.log(1);
                         delete da['product_ID']
                         //console.log(da);
                         //const i = da.indexOf('product_ID');
                         //da = da.splice(i, 1);
                         setProductDetail((pre) => [...pre, Object.values(da)])
                         setField((pre) => [...pre, Object.keys(da)])
-                        console.log(1);
+                        //console.log(1);
                     }
                 })
             },
@@ -168,14 +168,14 @@ export default function Product_detail({ route }) {
                 snapshot.forEach((childSnapshot) => {
                     let da = childSnapshot.val();
                     if (da && da['product_ID'] == route.params.paramKey.ID) {
-                        console.log(2);
+                        //console.log(2);
                         delete da['product_ID']
                         //console.log(da);
                         //const i = da.indexOf('product_ID');
                         //da = da.splice(i, 1);
                         setProductDetail((pre) => [...pre, Object.values(da)])
                         setField((pre) => [...pre, Object.keys(da)])
-                        console.log(1);
+                        //console.log(1);
                     }
                 })
             },
@@ -192,14 +192,14 @@ export default function Product_detail({ route }) {
                 snapshot.forEach((childSnapshot) => {
                     let da = childSnapshot.val();
                     if (da && da['product_ID'] == route.params.paramKey.ID) {
-                        console.log(2);
+                        //console.log(2);
                         delete da['product_ID']
                         //console.log(da);
                         //const i = da.indexOf('product_ID');
                         //da = da.splice(i, 1);
                         setProductDetail((pre) => [...pre, Object.values(da)])
                         setField((pre) => [...pre, Object.keys(da)])
-                        console.log(1);
+                        //console.log(1);
                     }
                 })
             },
@@ -216,14 +216,14 @@ export default function Product_detail({ route }) {
                 snapshot.forEach((childSnapshot) => {
                     let da = childSnapshot.val();
                     if (da && da['product_ID'] == route.params.paramKey.ID) {
-                        console.log(2);
+                        //console.log(2);
                         delete da['product_ID']
                         //console.log(da);
                         //const i = da.indexOf('product_ID');
                         //da = da.splice(i, 1);
                         setProductDetail((pre) => [...pre, Object.values(da)])
                         setField((pre) => [...pre, Object.keys(da)])
-                        console.log(1);
+                        //console.log(1);
                     }
                 })
             },
@@ -240,14 +240,14 @@ export default function Product_detail({ route }) {
                 snapshot.forEach((childSnapshot) => {
                     let da = childSnapshot.val();
                     if (da && da['product_ID'] == route.params.paramKey.ID) {
-                        console.log(2);
+                        //console.log(2);
                         delete da['product_ID']
                         //console.log(da);
                         //const i = da.indexOf('product_ID');
                         //da = da.splice(i, 1);
                         setProductDetail((pre) => [...pre, Object.values(da)])
                         setField((pre) => [...pre, Object.keys(da)])
-                        console.log(1);
+                        //console.log(1);
                     }
                 })
             },
@@ -255,6 +255,44 @@ export default function Product_detail({ route }) {
                 onlyOnce: true,
             }
         )
+    }
+
+    function LoadUserReview() {
+        const starCountRef = ref(db, "User_comment/");
+        setUserReview([])
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                let sum = 0;
+                let count = 0;
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    if (da && da['Product_ID'] == route.params.paramKey.ID) {
+                        setUserReview((pre) => [...pre, da]);
+                        sum += parseFloat(da.Rate)
+                        count++;
+                        //console.log(da)
+                    }
+                })
+
+                let average = parseFloat(sum) / parseFloat(count);
+                console.log(average)
+                setAverageReview(average);
+
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+    }
+
+    useEffect(() => {
+        console.log("recommend Data" + recommendData)
+        if(recommendData.length > 0)
+            HandleSimilarProduct()
+
+        LoadProductDetail()
+        LoadUserReview()
 
         return () => { }
 
@@ -408,6 +446,43 @@ export default function Product_detail({ route }) {
         return { "islike": isLiked, "id": (User.ID + id) }
     }
 
+    const renderSale = () => {
+        if (route.params.ratio != 0) {
+            return (
+                <View height={69} width={49} marginLeft={10}>
+                    <Image
+                        source={require('../image/OFF2.png')}
+                        height={'100%'}
+                        width={'100%'} />
+                    <Text style={styles.off_text}>{route.params.ratio}%</Text>
+                </View>
+            )
+        }
+
+    }
+
+    const renderPrice = () => {
+        if (route.params.ratio != 0) {
+            return (
+                <View flexDirection='row' marginTop={5}>
+                    <Text style={styles.price}>${route.params.paramKey.price}</Text>
+                    <Text style={styles.price_sale}>${route.params.SaleOff}</Text>
+                    <Icon name={icon} onPress={ClickHeart} size={28} color={color.white} marginLeft={130} marginTop={3} />
+                    <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10} />
+                </View>
+            )
+        }
+        else {
+            return (
+                <View flexDirection='row' marginTop={5}>
+                    <Text style={styles.normal_price}>${route.params.paramKey.price}</Text>
+                    <Icon name={icon} onPress={ClickHeart} size={28} color={color.white} marginLeft={130} marginTop={3} />
+                    <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10} />
+                </View>
+            )
+        }
+    }
+
 
     return (
         <View style={styles.container}>
@@ -439,28 +514,17 @@ export default function Product_detail({ route }) {
                     <ScrollView>
                         <View flexDirection='row'>
                             <Text style={styles.product_name} numberOfLines={2}>{route.params.paramKey.name}</Text>
-                            <View height={69} width={49} marginLeft={10}>
-                                <Image
-                                    source={require('../image/OFF2.png')}
-                                    height={'100%'}
-                                    width={'100%'} />
-                                <Text style={styles.off_text}>{route.params.ratio}%</Text>
-                            </View>
+                            {renderSale()}
                         </View>
                         <View style={styles.star} marginTop={10}>
-                            <Icon name="star" size={20} color={color.yellow_2} />
-                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
-                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
-                            <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
-                            <Icon name="star-o" size={20} color={color.yellow_2} marginLeft={5} />
-                            <Text style={styles.review}>(250 Reviews)</Text>
+                            <Icon name={AverageReview >= 1 ? 'star' : 'star-o'} size={20} color={color.yellow_2} />
+                            <Icon name={AverageReview >= 2 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                            <Icon name={AverageReview >= 3 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                            <Icon name={AverageReview >= 4 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                            <Icon name={AverageReview >= 5 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                            <Text style={styles.review}>({UserReview.length} Reviews)</Text>
                         </View>
-                        <View flexDirection='row' marginTop={5}>
-                            <Text style={styles.price}>${route.params.paramKey.price}</Text>
-                            <Text style={styles.price_sale}>${route.params.SaleOff}</Text>
-                            <Icon name={icon} onPress={ClickHeart} size={28} color={color.white} marginLeft={130} marginTop={3} />
-                            <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10} />
-                        </View>
+                        {renderPrice()}
                         <View style={styles.line} />
                         <Text style={styles.section}>Technical parameters</Text>
                         <View flexDirection='row' marginLeft={15}>
@@ -487,14 +551,14 @@ export default function Product_detail({ route }) {
                         <View style={styles.line} />
                         <Text style={styles.section}>Product Reviews</Text>
                         <View flexDirection='row'>
-                            <Text style={styles.score}>4.0</Text>
+                            <Text style={styles.score}>{AverageReview.toFixed(2)}</Text>
                             <View style={styles.star} marginTop={20} marginLeft={10}>
-                                <Icon name="star" size={20} color={color.yellow_2} />
-                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
-                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
-                                <Icon name="star" size={20} color={color.yellow_2} marginLeft={5} />
-                                <Icon name="star-o" size={20} color={color.yellow_2} marginLeft={5} />
-                                <Text style={styles.review}>(250 Reviews)</Text>
+                                <Icon name={AverageReview >= 1 ? 'star' : 'star-o'} size={20} color={color.yellow_2} />
+                                <Icon name={AverageReview >= 2 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                                <Icon name={AverageReview >= 3 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                                <Icon name={AverageReview >= 4 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                                <Icon name={AverageReview >= 5 ? 'star' : 'star-o'} size={20} color={color.yellow_2} marginLeft={5} />
+                                <Text style={styles.review}>({UserReview.length} Reviews)</Text>
                             </View>
                         </View>
                         <Text style={styles.section2}>Pictures from buyers</Text>
@@ -507,8 +571,13 @@ export default function Product_detail({ route }) {
                             <Buyer_image />
                         </ScrollView>
                         <ScrollView horizontal pagingEnabled>
-                            <Comment />
-                            <Comment />
+                            {
+                                UserReview.map((review) => (
+
+                                    <Comment review={review} />
+
+                                ))
+                            }
                         </ScrollView>
                         <View style={styles.line} />
                         <Text style={styles.section}>Similar products</Text>
@@ -562,7 +631,7 @@ export default function Product_detail({ route }) {
                             <View height={80} width={80}>
                                 <Image
                                     onPress={slideUp}
-                                    source={require('../image/3.png')}
+                                    source={{ uri: route.params.listImage.at(0) }}
                                     height={80}
                                     width={80} />
                             </View>
@@ -668,6 +737,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: color.white,
         textDecorationLine: 'line-through',
+        textDecorationStyle: 'solid'
+    },
+    normal_price: {
+        fontFamily: 'Inter_SemiBold',
+        fontSize: 12,
+        color: color.grey_text,
         textDecorationStyle: 'solid'
     },
     price_sale: {

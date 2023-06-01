@@ -181,6 +181,48 @@ const product = (props) => {
         }
     }
 
+    const renderSale = () => {
+        if (ratio != 0) {
+            return (
+                <View marginLeft={90} marginTop={0}>
+                    {/* <Svg height={41} width={29}>
+                    <Image
+                        href={require('../image/OFF.png')}
+                        height={41}
+                        width={29}
+                        resizeMode={'xMidYMid slice'}/>
+                    <Text style={styles.off_text}>25%</Text>
+                </Svg> */}
+                    <Image
+                        source={require('../image/OFF.png')}
+                        height={41}
+                        width={29} />
+                    <Text style={styles.off_text}>{ratio}%</Text>
+                    {/* resizeMode={'xMidYMid slice'} /> */}
+                </View>
+            )
+        }
+
+    }
+
+    const renderPrice = () => {
+        if (ratio != 0) {
+            return (
+                <View flexDirection='row' marginTop={5} marginHorizontal={8}>
+                    <Text style={styles.price}>${props.data.price}</Text>
+                    <Text style={styles.price_sale}>${SaleOff}</Text>
+                </View>
+            )
+        }
+        else {
+            return (
+                <View flexDirection='row' marginTop={5} marginHorizontal={8}>
+                    <Text style={styles.normal_price}>${props.data.price}</Text>
+                </View>
+            )
+        }
+    }
+
     return (
         <View style={styles.product}>
             <View style={StyleSheet.absoluteFill} >
@@ -220,22 +262,7 @@ const product = (props) => {
 
                 <Icon name={icon} onPress={ClickHeart} size={25} color={color.red} marginLeft={10} marginTop={7} />
                 {/* {renderLike} */}
-                <View marginLeft={90} marginTop={0}>
-                    {/* <Svg height={41} width={29}>
-                    <Image
-                        href={require('../image/OFF.png')}
-                        height={41}
-                        width={29}
-                        resizeMode={'xMidYMid slice'}/>
-                    <Text style={styles.off_text}>25%</Text>
-                </Svg> */}
-                    <Image
-                        source={require('../image/OFF.png')}
-                        height={41}
-                        width={29} />
-                    <Text style={styles.off_text}>{ratio}%</Text>
-                    {/* resizeMode={'xMidYMid slice'} /> */}
-                </View>
+                {renderSale()}
             </View>
             <Text style={styles.Pro_name}>{props.data.name}</Text>
             <View style={styles.star}>
@@ -245,10 +272,9 @@ const product = (props) => {
                 <Icon name="star" size={15} color={color.yellow} marginLeft={3} />
                 <Icon name="star-o" size={15} color={color.yellow} marginLeft={3} />
             </View>
-            <View flexDirection='row' marginTop={5} marginHorizontal={8}>
-                <Text style={styles.price}>${props.data.price}</Text>
-                <Text style={styles.price_sale}>${SaleOff}</Text>
-            </View>
+            
+            {renderPrice()}
+
             <View style={StyleSheet.absoluteFill} marginLeft={142} marginTop={160}>
                 {/* <Svg height={33} width={33}> 
                     <Image 
@@ -297,6 +323,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: color.grey_text,
         textDecorationLine: 'line-through',
+        textDecorationStyle: 'solid'
+    },
+    normal_price: {
+        fontFamily: 'Inter_SemiBold',
+        fontSize: 12,
+        color: color.grey_text,
         textDecorationStyle: 'solid'
     },
     price_sale: {

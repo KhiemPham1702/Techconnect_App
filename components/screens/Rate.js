@@ -11,6 +11,9 @@ import Product_bought from '../task/product_bought';
 import { db, ref, set, child, get, onValue, auth } from '../DAL/Database'
 import {User} from '../screens/Login'
 
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+
 export default function Rate({ route }) { // route.params.
     const navigation = useNavigation();
     const [fontsLoaded] = useFonts({
@@ -59,6 +62,15 @@ export default function Rate({ route }) { // route.params.
         navigation.navigate("Tab_navigation")
     }
 
+    const pickImageFromLibrary = async () => {
+        // await requestMediaLibraryPermission(); // Yêu cầu quyền truy cập vào thư viện ảnh
+        const result = await ImagePicker.launchImageLibraryAsync();
+        if (!result.canceled) {
+          setSelectedImage(result.assets);
+          console.log(result.assets);
+        }
+      };
+
     return (
         <View style={styles.container}>
             <View style={StyleSheet.absoluteFill} marginLeft={14} marginTop={30}>
@@ -94,7 +106,7 @@ export default function Rate({ route }) { // route.params.
                 <View style={StyleSheet.absoluteFill} marginLeft={30} marginTop={18}>
                     <Svg height={35} width={40}  >
                         <Image
-                            // onPress={() => navigation.goBack()}
+                            onPress={() => pickImageFromLibrary}
                             href={require('../image/ion_camera-sharp.png')}
                             height={40}
                             width={40}

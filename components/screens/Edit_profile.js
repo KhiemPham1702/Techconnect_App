@@ -12,9 +12,19 @@ import { User, reload } from '../screens/Login'
 import { AddressObj, LoadAddress } from '../screens/Profile';
 
 
+import { launchImageLibrary } from 'react-native-image-picker';
+// import { check, PERMISSIONS, request } from 'react-native-permissions';
+// import ImagePicker from 'react-native-image-crop-picker';
+
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+
+
+
 export default function Edit_profile() {
     const [first_Name, setfirst_Name] = useState(User.first_Name)
     const [last_Name, setlast_Name] = useState(User.last_Name)
+    const [selectedImage, setSelectedImage] = useState(null)
     //const [Email, setEmail] = useState(User.email)
     const [Phone, setPhone] = useState(User.phone)
     const [Address, setAddress] = useState(() => {
@@ -100,6 +110,101 @@ export default function Edit_profile() {
         SplashScreen.hideAsync();
     };
 
+    // const ImagePicker_Check = () => {
+    //     check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
+    //     .then((result) => {
+    //         if (result === 'granted') {
+    //             pickImage();
+    //         } else {
+    //         // Quyền chưa được cấp, bạn cần yêu cầu quyền truy cập
+    //         request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then((permissionResult) => {
+    //             if (permissionResult === 'granted') {
+    //                 pickImage();
+    //             } else {
+    //                 alert('Can not access to upload pictures!!!');
+    //             }
+    //         });
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //     });
+    // };
+
+    // const pickImage = () => {
+    //     const options = {
+    //         mediaType: 'photo',
+    //         includeBase64: false,
+    //         maxHeight: 200,
+    //         maxWidth: 200,
+    //       };
+        
+    //     launchImageLibrary(options, (response) => {
+    //     if (response.didCancel) {
+    //         console.log('User cancelled image picker');
+    //     } else if (response.error) {
+    //         console.log('ImagePicker Error: ', response.error);
+    //     } else if (response.customButton) {
+    //         console.log('User tapped custom button: ', response.customButton);
+    //     } else {
+    //         setSelectedImage(response.uri);
+    //     }
+    //     });
+
+    //     // launchImageLibrary(options, response => {
+    //     //     console.log(response);
+    //     //     if (response.uri) {
+    //     //       setSelectedImage(response.uri);
+    //     //     }
+    //     //   });
+
+    //     // ImagePicker.openPicker({
+    //     //     width: 300,
+    //     //     height: 400,
+    //     //     cropping: true
+    //     //   }).then(image => {
+    //     //     console.log(image);
+    //     //   }).catch(error => {
+    //     //     console.log(error);
+    //     //   });
+    //     // alert('hello');
+    // };
+
+    const requestMediaLibraryPermission = async () => {
+        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+        if (status !== 'granted') {
+          alert('Quyền truy cập vào thư viện ảnh không được cấp!');
+        }
+      };
+
+      const requestCameraPermission = async () => {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        if (status !== 'granted') {
+          alert('Quyền truy cập vào camera không được cấp!');
+        }
+      };
+
+    //   const pickImageFromLibrary = async () => {
+    //     const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+    //     if (status === 'granted') {
+    //       const result = await ImagePicker.launchImageLibraryAsync();
+    //       if (!result.cancelled) {
+    //         // Xử lý ảnh được chọn ở đây
+    //       }
+    //     } else {
+    //       alert('Quyền truy cập vào thư viện ảnh không được cấp!');
+    //     }
+    //   };
+
+      const pickImageFromLibrary = async () => {
+        // await requestMediaLibraryPermission(); // Yêu cầu quyền truy cập vào thư viện ảnh
+        const result = await ImagePicker.launchImageLibraryAsync();
+        if (!result.canceled) {
+          setSelectedImage(result.assets);
+          console.log(result.assets);
+        }
+      };
+
   return (
     <View style={styles.container}>
           <Icon2 name='arrow-left' size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.navigate('Tab_navigation')}/>{/*navigation.goBack()}/>*/}
@@ -107,17 +212,19 @@ export default function Edit_profile() {
         <View padding={30}>
             <View style={styles.view_ava}>
                 <View style={styles.avatar_view}>
-                    <Image
+                    {selectedImage && <Image
                         style={styles.image}
-                        source={require('../image/girl.jpg')}
-                    />               
+                        source={selectedImage}
+                    /> }              
                 </View>
+                <TouchableOpacity onPress={pickImageFromLibrary}>
                 <View style={styles.avatar_view2}>
                     <Image
                         style={styles.image2}
                         source={require('../image/camera.png')}
                     />               
                 </View>
+                </TouchableOpacity>
             </View>
             <View marginTop={20}>
                 <Text style={styles.address} marginTop={15}>Public Information</Text>
