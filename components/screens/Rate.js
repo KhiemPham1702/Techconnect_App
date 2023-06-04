@@ -63,7 +63,6 @@ export default function Rate({ route }) { // route.params.
     }
 
     const pickImageFromLibrary = async () => {
-        // await requestMediaLibraryPermission(); // Yêu cầu quyền truy cập vào thư viện ảnh
         const result = await ImagePicker.launchImageLibraryAsync();
         if (!result.canceled) {
           setSelectedImage(result.assets);

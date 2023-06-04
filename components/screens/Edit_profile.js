@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import Icon2 from 'react-native-vector-icons/Feather';
@@ -8,6 +8,9 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import color from '../../contains/color';
 import { db, ref, set, child, get, onValue } from '../DAL/Database'
+
+import { getStorage, uploadBytes, ref as ref_storage, getMetadata, getDownloadURL } from "firebase/storage"
+
 import { User, reload } from '../screens/Login'
 import { AddressObj, LoadAddress } from '../screens/Profile';
 
@@ -18,21 +21,24 @@ import { launchImageLibrary } from 'react-native-image-picker';
 
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
+import { refFromURL } from 'firebase/database';
 
 
-
-export default function Edit_profile() {
+export default function Edit_profile({route}) {
     const [first_Name, setfirst_Name] = useState(User.first_Name)
     const [last_Name, setlast_Name] = useState(User.last_Name)
-    const [selectedImage, setSelectedImage] = useState(null)
+    const [selectedImage, setSelectedImage] = useState(() => {
+        if(route.params.avatar)
+            return route.params.avatar
+    })
     //const [Email, setEmail] = useState(User.email)
     const [Phone, setPhone] = useState(User.phone)
     const [Address, setAddress] = useState(() => {
-        if(AddressObj != undefined)
+        if (AddressObj != undefined)
             return AddressObj.address
         return ""
     })
-    
+
     // useEffect(() => {
     //     starCountRef = ref(db, "Address/");  
     //     onValue(
@@ -57,9 +63,9 @@ export default function Edit_profile() {
     //     )
     // }, []);
 
-    function ChangeInformation(){
+    function ChangeInformation() {
         //console.log(User.Information)
-        
+
         set(ref(db, 'App_user/' + User.ID), {
             ID: User.ID,
             avatar: User.avatar,
@@ -81,7 +87,7 @@ export default function Edit_profile() {
         const id = AddressObj != null ? AddressObj.id : User.ID;
         set(ref(db, 'Address/' + id), {
             id: id,
-            user_ID: User.ID, 
+            user_ID: User.ID,
             address: Address,
         }).catch((error) => {
             console.error(error);
@@ -89,6 +95,22 @@ export default function Edit_profile() {
 
         console.log(User);
         navigation.navigate('Tab_navigation')
+    }
+
+    function ChangeAvatar(fileName) {
+        set(ref(db, 'App_user/' + User.ID), {
+            ID: User.ID,
+            avatar: fileName,
+            email: User.email,
+            enabled: User.enabled,
+            first_Name: first_Name,
+            last_Name: last_Name,
+            password: User.password,
+            phone: Phone,
+            reset_password_token: User.reset_password_token,
+        }).catch((error) => {
+            console.error(error);
+        });
     }
 
     const navigation = useNavigation();
@@ -99,7 +121,7 @@ export default function Edit_profile() {
     });
     useEffect(() => {
         async function prepare() {
-        await SplashScreen.preventAutoHideAsync();
+            await SplashScreen.preventAutoHideAsync();
         }
         prepare();
     }, []);
@@ -138,7 +160,7 @@ export default function Edit_profile() {
     //         maxHeight: 200,
     //         maxWidth: 200,
     //       };
-        
+
     //     launchImageLibrary(options, (response) => {
     //     if (response.didCancel) {
     //         console.log('User cancelled image picker');
@@ -173,16 +195,16 @@ export default function Edit_profile() {
     const requestMediaLibraryPermission = async () => {
         const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
         if (status !== 'granted') {
-          alert('Quyền truy cập vào thư viện ảnh không được cấp!');
+            alert('Quyền truy cập vào thư viện ảnh không được cấp!');
         }
-      };
+    };
 
-      const requestCameraPermission = async () => {
+    const requestCameraPermission = async () => {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         if (status !== 'granted') {
-          alert('Quyền truy cập vào camera không được cấp!');
+            alert('Quyền truy cập vào camera không được cấp!');
         }
-      };
+    };
 
     //   const pickImageFromLibrary = async () => {
     //     const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
@@ -196,72 +218,122 @@ export default function Edit_profile() {
     //     }
     //   };
 
-      const pickImageFromLibrary = async () => {
+    const pickImageFromLibrary = async () => {
         // await requestMediaLibraryPermission(); // Yêu cầu quyền truy cập vào thư viện ảnh
         const result = await ImagePicker.launchImageLibraryAsync();
         if (!result.canceled) {
-          setSelectedImage(result.assets);
-          console.log(result.assets);
+            setSelectedImage(result.assets);
+            uploadImage(result.assets)
         }
-      };
+    };
 
-  return (
-    <View style={styles.container}>
-          <Icon2 name='arrow-left' size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.navigate('Tab_navigation')}/>{/*navigation.goBack()}/>*/}
-        <Text style={styles.title} marginLeft={142} marginTop={-35}>Edit Profile</Text>
-        <View padding={30}>
-            <View style={styles.view_ava}>
-                <View style={styles.avatar_view}>
-                    {selectedImage && <Image
-                        style={styles.image}
-                        source={selectedImage}
-                    /> }              
+
+    
+    const uploadImage = async (assets) => {
+
+        const uploadUri = assets[0]['uri'];
+        //console.log(uploadUri)
+        
+        const fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+        //console.log(fileName)
+        try {
+            // Upload File
+            const storage = getStorage();
+            const storageRef = ref_storage(storage, 'images/' + fileName);
+
+            //convert image to array of bytes
+            const img = await fetch(assets[0]['uri']);
+            const bytes = await img.blob();
+
+            //console.log(assets)
+            await uploadBytes(storageRef, bytes); //upload images
+
+
+            // Get Source of File
+            getMetadata(storageRef)
+                .then(async (metadata) => {
+                    // Metadata now contains the metadata for 'images/forest.jpg'
+                    //console.log(metadata)
+                    const imagePath = metadata.fullPath; // images/image-3920.jpeg
+                    const url = await getDownloadURL(ref_storage(storage, imagePath))
+                    //console.log(url)
+                    setSelectedImage(url)
+                    ChangeAvatar(url)
+                    User.avatar = url
+                })
+                .catch((error) => {
+                    // Uh-oh, an error occurred!
+                    console.log(error)
+                });
+
+        } catch(e) {
+            console.log(e)
+        }
+
+        
+        
+
+    };
+
+
+    return (
+        <View style={styles.container}>
+            <Icon2 name='arrow-left' size={35} color={color.white} marginLeft={15} marginTop={30} onPress={() => navigation.navigate('Tab_navigation')} />{/*navigation.goBack()}/>*/}
+            <Text style={styles.title} marginLeft={142} marginTop={-35}>Edit Profile</Text>
+            <View padding={30}>
+                <View style={styles.view_ava}>
+                    <View style={styles.avatar_view}>
+                        {selectedImage && <Image
+                            style={styles.image}
+                            //source={selectedImage}
+                            source={{ uri: selectedImage }}
+                        />}
+                    </View>
+                    <TouchableOpacity onPress={pickImageFromLibrary}>
+                        <View style={styles.avatar_view2}>
+                            <Image
+                                style={styles.image2}
+                                source={require('../image/camera.png')}
+                            />
+                        </View>
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={pickImageFromLibrary}>
-                <View style={styles.avatar_view2}>
-                    <Image
-                        style={styles.image2}
-                        source={require('../image/camera.png')}
-                    />               
+                <View marginTop={20}>
+                    <Text style={styles.address} marginTop={15}>Public Information</Text>
+                    <TextInput
+                        style={styles.usernametext}
+                        placeholder="First Name"
+                        value={first_Name}
+                        onChangeText={setfirst_Name}
+                        placeholderTextColor={color.white} />
+                    <TextInput
+                        style={styles.usernametext}
+                        placeholder="Last Name"
+                        value={last_Name}
+                        onChangeText={setlast_Name}
+                        placeholderTextColor={color.white} />
+                    <TextInput
+                        style={styles.usernametext}
+                        placeholder="Phone"
+                        value={Phone}
+                        onChangeText={setPhone}
+                        placeholderTextColor={color.white} />
+                    <TextInput
+                        style={styles.usernametext}
+                        placeholder="Address"
+                        value={Address}
+                        onChangeText={setAddress}
+                        placeholderTextColor={color.white} />
                 </View>
+                <TouchableOpacity onPress={ChangeInformation}>
+                    <View style={styles.button2} >
+                        <Text style={styles.buttonText2}>Complete</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
-            <View marginTop={20}>
-                <Text style={styles.address} marginTop={15}>Public Information</Text>
-                <TextInput 
-                    style={styles.usernametext}
-                    placeholder="First Name"
-                    value={first_Name}
-                    onChangeText={setfirst_Name}
-                    placeholderTextColor={color.white}/>
-                <TextInput 
-                    style={styles.usernametext}
-                    placeholder="Last Name"
-                    value={last_Name}
-                    onChangeText={setlast_Name}
-                    placeholderTextColor={color.white}/>
-                <TextInput 
-                    style={styles.usernametext}
-                    placeholder="Phone"
-                    value={Phone}
-                    onChangeText={setPhone}
-                    placeholderTextColor={color.white}/>
-                <TextInput 
-                    style={styles.usernametext}
-                    placeholder="Address"
-                    value={Address}
-                    onChangeText={setAddress}
-                    placeholderTextColor={color.white}/>
-            </View>
-            <TouchableOpacity onPress={ChangeInformation}>
-            <View style={styles.button2} >
-                <Text style={styles.buttonText2}>Complete</Text>
-            </View>
-            </TouchableOpacity>
+
         </View>
-        
-    </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
@@ -274,29 +346,29 @@ const styles = StyleSheet.create({
         color: color.white,
         fontFamily: 'Inter_Medium',
     },
-      button2: {
+    button2: {
         backgroundColor: color.red,
         height: 60,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 12,
         marginTop: 50,
-      },
-      buttonText2: {
+    },
+    buttonText2: {
         fontStyle: 'normal',
         fontSize: 28,
         color: 'white',
         letterSpacing: 1,
         fontFamily: 'Inter_SemiBold',
-      },
-      view_ava: {
+    },
+    view_ava: {
         justifyContent: 'center',
         alignItems: 'center',
-      },
-      avatar_view: {
+    },
+    avatar_view: {
         width: 100,
         height: 100,
-        
+
         borderRadius: 100,
         overflow: 'hidden',
         borderColor: color.white,
@@ -330,7 +402,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 12,
         marginTop: 25,
-    
+
         fontStyle: 'normal',
         fontSize: 20,
         color: color.white,
@@ -340,5 +412,5 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 22,
         fontFamily: 'Inter_Medium',
-      },
+    },
 })

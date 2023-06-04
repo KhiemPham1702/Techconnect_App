@@ -51,7 +51,7 @@ const user_commented = (props) => {
                 <View  style={styles.avatar_view}>
                     <Image
                         style={styles.image}
-                        source={require('../image/girl.jpg')}
+                        source={{ uri: User.avatar }}
                     />               
                 </View>
                 <View >

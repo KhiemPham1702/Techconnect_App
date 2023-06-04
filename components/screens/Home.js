@@ -153,9 +153,9 @@ export default function Home() {
 
         if (recommendData.length > 0) {
             console.log(recommendData);
-            LoadProduct();
         }
 
+        LoadProduct();
         // navigation.addListener('focus', () => {
         //     //alert('Refreshed');
         //     LoadProduct();
