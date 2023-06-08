@@ -31,6 +31,7 @@ const discount_ticket = (props) => {
             await SplashScreen.preventAutoHideAsync();
         }
         prepare();
+        console.log(props.data)
     }, []);
 
     if (!fontsLoaded) {
@@ -42,9 +43,10 @@ const discount_ticket = (props) => {
     function UpdateDiscount() {
         const updates = {};
         updates['/Discount/' + props.data.ID + '/' + 'user_ID'] = User.ID;
-
+        updates['/Discount/' + props.data.ID + '/' + 'state'] =  'Available'
         update(ref(db), updates);
     }
+
 
     function SaveOrUsePress() {
         if (SaveOrUse === "Save") {

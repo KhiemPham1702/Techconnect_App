@@ -23,38 +23,49 @@ const product = (props) => {
     const [SaleOff, setSaleOff] = useState(props.data.price)
     const [myImage, setImage] = useState([]);
 
-    
 
-    // parent call child function
-    // useImperativeHandle(ref, () => ({
-    //     reSetData: () => {ResetData()},
-    // }));
+    const [AverageReview, setAverageReview] = useState(0)
 
+    function LoadUserReview() {
+        const starCountRef = GetRef("User_comment/")
+        onValue(
+            starCountRef,
+            (snapshot) => {
+                let sum = 0;
+                let count = 0;
+                snapshot.forEach((childSnapshot) => {
+                    let da = childSnapshot.val();
+                    if (da && da['Product_ID'] == props.data.ID) {
+                        sum += parseFloat(da.Rate)
+                        count++;
+                        //console.log(da)
+                    }
+                })
 
+                let average = parseFloat(sum) / parseFloat(count);
+                //console.log(average)
+                if(average == 0)
+                    average = 5
+                setAverageReview(average);
 
-    // function ResetData() {
-    //     console.log(props.data)
-    //     //console.log(SaleOff)
-    //     setLike(props.like.isLike)
-    //     setIcon(props.like.islike == true ? 'heart' : 'heart-o')
-    //     setSaleOff(props.data.price)
-    //     LoadImageOfProduct()
-    //     LoadSaleOff()
-
-        
-    // }
+            },
+            {
+                onlyOnce: true,
+            }
+        )
+    }
 
     const ListImage = useState([]);
 
     function LoadSaleOff(id) {
         if (id != "") {
-            
+
             const starCountRef = GetRef("Discount/" + id)//ref(db, "Discount/" + props.data.discount_ID);
             onValue(
                 starCountRef,
                 (snapshot) => {
                     let d = snapshot.val()
-                    if(d != undefined) {
+                    if (d != undefined) {
 
                         let date = new Date(d.expirationDate)
                         if ((isNaN(date) || date >= new Date())) {
@@ -93,6 +104,8 @@ const product = (props) => {
                         //console.log(childSnapshot.val())
                     }
                 })
+                if (!myImage.find(element => element != undefined && element.image_Url == props.data.thumbnail))
+                    setImage((pre) => [...pre, props.data.thumbnail]);
             },
             {
                 onlyOnce: true,
@@ -106,7 +119,8 @@ const product = (props) => {
 
         LoadSaleOff(props.data.discount_ID);
         LoadImageOfProduct();
-        console.log(props.data)
+        LoadUserReview()
+        //console.log(props.data)
         //console.log("Hello")
     }, [props]);
 
@@ -138,14 +152,14 @@ const product = (props) => {
             user_ID: User.ID
         })
             .then(() => {
-                liked.push({"ID": (User.ID + props.data.ID), "user_ID": User.ID, "product_ID": props.data.ID})
+                liked.push({ "ID": (User.ID + props.data.ID), "user_ID": User.ID, "product_ID": props.data.ID })
             })
             .catch((error) => {
                 // The write failed...
             });
     }
     function Unlike() {
-        console.log(liked)
+        //console.log(liked)
         for (var i = 0; i < liked.length; i++) {
 
             if (liked.at(i).ID === props.like.id) {
@@ -241,8 +255,8 @@ const product = (props) => {
                 <TouchableOpacity onPress={() => navigation.navigate('Product_detail', {
                     paramKey: props.data,
                     listImage: myImage,
-                    like: {"isLike": like, "ID": props.data.ID},
-                    ratio : ratio,
+                    like: { "isLike": like, "ID": props.data.ID },
+                    ratio: ratio,
                     SaleOff: SaleOff
                 })}>
                     <View style={styles.img_view}>
@@ -264,15 +278,16 @@ const product = (props) => {
                 {/* {renderLike} */}
                 {renderSale()}
             </View>
-            <Text style={styles.Pro_name}>{props.data.name}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.Pro_name}>{props.data.name}</Text>
             <View style={styles.star}>
-                <Icon name="star" size={15} color={color.yellow} />
-                <Icon name="star" size={15} color={color.yellow} marginLeft={3} />
-                <Icon name="star" size={15} color={color.yellow} marginLeft={3} />
-                <Icon name="star" size={15} color={color.yellow} marginLeft={3} />
-                <Icon name="star-o" size={15} color={color.yellow} marginLeft={3} />
+                <Icon name={AverageReview >= 1 ? 'star' : 'star-o'} size={15} color={color.yellow} />
+                <Icon name={AverageReview >= 2 ? 'star' : 'star-o'} size={15} color={color.yellow} marginLeft={3} />
+                <Icon name={AverageReview >= 3 ? 'star' : 'star-o'} size={15} color={color.yellow} marginLeft={3} />
+                <Icon name={AverageReview >= 4 ? 'star' : 'star-o'} size={15} color={color.yellow} marginLeft={3} />
+                <Icon name={AverageReview >= 5 ? 'star' : 'star-o'} size={15} color={color.yellow} marginLeft={3} />
+
             </View>
-            
+
             {renderPrice()}
 
             <View style={StyleSheet.absoluteFill} marginLeft={142} marginTop={160}>
@@ -307,7 +322,7 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     Pro_name: {
-        marginTop: 83,
+        marginTop: 93,
         marginHorizontal: 8,
         fontFamily: 'Inter_Medium',
         fontSize: 12,

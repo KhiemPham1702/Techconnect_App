@@ -57,6 +57,7 @@ export default function Home() {
     const [DATA, setDATA] = useState([]);
     const [imageBrand, setImageBrand] = useState([])
 
+    const [advertise, setAdvertise] = useState([])
 
     const [Category, setCategory] = useState("")
     const [ProductBrand, setProductBrand] = useState("")
@@ -80,6 +81,8 @@ export default function Home() {
                     let data = childSnapshot.val()
 
                     ProductData.push(data);
+                    if(advertise.length < 3)
+                        advertise.push(data)
 
                     if (recommendData.includes(data.ID))
                         setDATA((pre) => [...pre, data]);
@@ -95,6 +98,7 @@ export default function Home() {
                         }
                     }
                 });
+
             },
             {
                 onlyOnce: true,
@@ -156,6 +160,10 @@ export default function Home() {
         }
 
         LoadProduct();
+        if(ProductData.length > 0) {
+            for(let i = 0; i < ProductData.length; i++)
+                setAdvertise((pre) => [...pre, ProductData.at(i)]);
+        }
         // navigation.addListener('focus', () => {
         //     //alert('Refreshed');
         //     LoadProduct();
@@ -281,7 +289,7 @@ export default function Home() {
                         pagingEnabled
                         horizontal
                         showsVerticalScrollIndicator={false}
-                        data={ProductData}
+                        data={advertise}
                         renderItem={(item) =>
                             <Product_review
                                 data={item}

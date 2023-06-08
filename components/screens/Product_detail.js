@@ -476,7 +476,7 @@ export default function Product_detail({ route }) {
             return (
                 <View flexDirection='row' marginTop={5}>
                     <Text style={styles.normal_price}>${route.params.paramKey.price}</Text>
-                    <Icon name={icon} onPress={ClickHeart} size={28} color={color.white} marginLeft={130} marginTop={3} />
+                    <Icon name={icon} onPress={ClickHeart} size={28} color={color.white} marginLeft={200} marginTop={3} />
                     <Icon3 name='sharealt' size={30} color={color.white} marginLeft={10} />
                 </View>
             )
@@ -740,9 +740,10 @@ const styles = StyleSheet.create({
         textDecorationStyle: 'solid'
     },
     normal_price: {
+        marginTop: 5,
         fontFamily: 'Inter_SemiBold',
-        fontSize: 12,
-        color: color.grey_text,
+        fontSize: 20,
+        color: color.white,
         textDecorationStyle: 'solid'
     },
     price_sale: {

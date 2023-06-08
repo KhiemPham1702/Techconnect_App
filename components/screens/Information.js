@@ -16,7 +16,7 @@ import { User, reload } from '../screens/Login'
 import { AddressObj, LoadAddress } from '../screens/Profile';
 
 
-export default function Infomation({route}) {
+export default function Infomation() {
     const navigation = useNavigation();
     const { height, width } = Dimensions.get("window");
     const [fontsLoaded] = useFonts({

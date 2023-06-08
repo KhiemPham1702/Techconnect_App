@@ -13,13 +13,25 @@ const user_commented = (props) => {
         Inter_Medium: require('../../assets/fonts/Inter-Medium.ttf'),
         Inter_Light: require('../../assets/fonts/Inter-Light.ttf'),
     });
+
+    const [data, setData] = useState(() => {
+        if (props.data.item.product != undefined)
+            return props.data.item.product;
+        else 
+            return {
+                thumbnail : '',
+                name: '',
+                color: '',
+            }
+    })
+
     useEffect(() => {
         async function prepare() {
         await SplashScreen.preventAutoHideAsync();
         }
         prepare();
 
-        //console.log(props.data)
+        //console.log(props.data.item.product)
 
     }, []);
 
@@ -35,12 +47,12 @@ const user_commented = (props) => {
                     <View  style={styles.avatar_view3}>
                         <Image
                             style={styles.image3}
-                            source={{ uri: props.data.item.product.thumbnail }}
+                            source={{ uri: data.thumbnail }}
                         />               
                     </View>
                     <View marginTop={5} marginLeft={10}>
-                        <Text style={styles.pro_name}>{props.data.item.product.name}</Text>
-                        <Text style={styles.pro_color}>Color: {props.data.item.product.color}</Text>
+                        <Text style={styles.pro_name}>{data.name}</Text>
+                        <Text style={styles.pro_color}>Color: {data.color}</Text>
                     </View>
                 </View>
             </View>
@@ -67,7 +79,8 @@ const user_commented = (props) => {
                     <View  style={styles.image_review}>
                         <Image
                             style={styles.image2}
-                            source={require('../image/user1.jpg')}
+                            //source={require('../image/user1.jpg')}
+                            source={{ uri: props.data.item.thumbnail }}
                         />               
                 </View>
                 </View>
