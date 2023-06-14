@@ -31,13 +31,17 @@ export default function History() {
           if(order.user_ID == User.ID) {
             let carts = []
             FullCartOfUser.forEach((data) => {
-              let cart = data 
-              
-              let e = ProductData.find(i => i.ID == cart.product_ID)
+              if(data.order_ID == order.ID)
+              {
+                let cart = data
 
-              cart.product = e
-              //console.log(cart)
-              carts.push(cart)
+                let e = ProductData.find(i => i.ID == cart.product_ID)
+
+                cart.product = e
+                //console.log(cart)
+                carts.push(cart)
+              }
+              
             })
             //console.log(order)
             //console.log(carts)

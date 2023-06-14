@@ -60,6 +60,8 @@ export default function List_product() {
   const [starRating, setStarRating] = useState(3);
   //const [childRefs, setChildRefs] = useState([])
 
+  const [productName, setProductName] = useState("")
+
   const navigation = useNavigation();
   const [slideAnim] = useState(new Animated.Value(1000));
   const [isVisible, setIsVisible] = useState(false);
@@ -400,6 +402,17 @@ export default function List_product() {
     handleSlideOut()
   }
 
+  function SearchPress() {
+    if(productName == "") {
+      ResetOrApplyClick('Apply');
+    }
+    else {
+      let filter = [...ProductData];
+      filter = filter.filter(e => e.name.toLowerCase().includes(productName))
+
+      setproductData(filter)
+    }
+  }
 
   const renderFilter = (item, type) => {
     //console.log(type)
@@ -451,9 +464,10 @@ export default function List_product() {
         <TextInput
           style={styles.searchhinttext}
           placeholder="Search products..."
+          onChangeText={(name) => setProductName(name)}
           placeholderTextColor={color.white} />
         <View style={StyleSheet.absoluteFill} marginLeft={235} marginTop={12}>
-          <Svg height={28} width={28}  >
+          <Svg height={28} width={28} onPress={SearchPress} >
             <Image
               href={require('../image/icon_search.png')}
               height={28}

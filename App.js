@@ -24,6 +24,7 @@ import Histoty from './components/screens/History';
 import Tab_navigation from './components/navigation/Tab_navigation';
 import Rate from './components/screens/Rate';
 import Infomation from './components/screens/Information';
+import Paypal from './components/screens/Paypal';
 
 const App = () => {
 
@@ -58,6 +59,7 @@ const App = () => {
         <Stack.Screen name="Tab_navigation" component={Tab_navigation}/>
         <Stack.Screen name="Rate" component={Rate}/>
         <Stack.Screen name="Information" component={Infomation}/>
+        <Stack.Screen name="Paypal" component={Paypal}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

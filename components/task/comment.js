@@ -76,12 +76,12 @@ const comment = (props) => {
                     <Icon name={props.review.Rate >= 5 ? 'star' : 'star-o'} size={15} color={color.yellow_2} marginLeft={5} />
                 </View>
                 <Text style={styles.user_name}>{props.review.Detail}</Text>
-                <View style={styles.image_review}>
+                {props.review.thumbnail != "" && <View style={styles.image_review}>
                     <Image
                         style={styles.image2}
-                        source={require('../image/user1.jpg')}
+                        source={{ uri: props.review.thumbnail }}
                     />
-                </View>
+                </View>}
             </View>
         </View>
     )

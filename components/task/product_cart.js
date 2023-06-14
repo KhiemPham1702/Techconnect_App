@@ -70,7 +70,7 @@ const product_cart = (props, ref) => {
         const data = props.data.product
         
         if (data != undefined && data.discount_ID != "" ) {
-            console.log(data)
+            //console.log(data)
             const starCountRef = GetRef("Discount/" + data.discount_ID)
             onValue(
                 starCountRef,
@@ -108,6 +108,7 @@ const product_cart = (props, ref) => {
         });
 
         LoadSaleOff()
+        console.log(props.data);
 
     }, []);
 
@@ -181,7 +182,7 @@ const product_cart = (props, ref) => {
                 <View style={styles.avatar_view}>
                     <Image
                         style={styles.image}
-                        source={{ uri: props.data.image }}
+                        source={{ uri: Data.thumbnail }}
                     />
                 </View>
                 <View marginTop={15} marginLeft={10}>

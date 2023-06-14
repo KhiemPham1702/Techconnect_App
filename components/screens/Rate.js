@@ -9,7 +9,8 @@ import color from '../../contains/color';
 import Product_bought from '../task/product_bought';
 
 import { db, ref, set, child, get, onValue, auth } from '../DAL/Database'
-import {User} from '../screens/Login'
+import { User } from '../screens/Login'
+import { getStorage, uploadBytes, ref as ref_storage, getMetadata, getDownloadURL } from "firebase/storage"
 
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
@@ -24,6 +25,7 @@ export default function Rate({ route }) { // route.params.
 
     const [RateStar, setStarRating] = useState(4)
     const [UserComment, setUserComment] = useState("")
+    const [thumbnail, setThumbnail] = useState("")
 
     useEffect(() => {
         async function prepare() {
@@ -40,20 +42,21 @@ export default function Rate({ route }) { // route.params.
     };
 
     function CreateComment(productID) {
-        
+
         set(ref(db, 'User_comment/' + (User.ID + productID)), {
             ID: (User.ID + productID),
             Detail: UserComment,
             Product_ID: productID,
             Rate: RateStar,
             User_ID: User.ID,
+            thumbnail: thumbnail
         }).catch((error) => {
             console.error(error);
         });
     }
 
     function RateProduct() {
-        if(route.params.data.length > 0) {
+        if (route.params.data.length > 0) {
             route.params.data.forEach((data) => {
                 CreateComment(data.ID)
             })
@@ -63,12 +66,57 @@ export default function Rate({ route }) { // route.params.
     }
 
     const pickImageFromLibrary = async () => {
+        // await requestMediaLibraryPermission(); // Yêu cầu quyền truy cập vào thư viện ảnh
         const result = await ImagePicker.launchImageLibraryAsync();
         if (!result.canceled) {
-          setSelectedImage(result.assets);
-          console.log(result.assets);
+            //setSelectedImage(result.assets);
+            uploadImage(result.assets)
         }
-      };
+    };
+
+    const uploadImage = async (assets) => {
+
+        const uploadUri = assets[0]['uri'];
+        //console.log(uploadUri)
+
+        const fileName = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+        //console.log(fileName)
+        try {
+            // Upload File
+            const storage = getStorage();
+            const storageRef = ref_storage(storage, 'comments/' + fileName);
+
+            //convert image to array of bytes
+            const img = await fetch(assets[0]['uri']);
+            const bytes = await img.blob();
+
+            //console.log(assets)
+            await uploadBytes(storageRef, bytes); //upload images
+
+
+            // Get Source of File
+            getMetadata(storageRef)
+                .then(async (metadata) => {
+                    // Metadata now contains the metadata for 'images/forest.jpg'
+                    //console.log(metadata)
+                    const imagePath = metadata.fullPath; // images/image-3920.jpeg
+                    const url = await getDownloadURL(ref_storage(storage, imagePath))
+                    //console.log(url)
+                    setThumbnail(url)
+                })
+                .catch((error) => {
+                    // Uh-oh, an error occurred!
+                    console.log(error)
+                });
+
+        } catch (e) {
+            console.log(e)
+        }
+
+
+
+
+    };
 
     return (
         <View style={styles.container}>
@@ -103,9 +151,9 @@ export default function Rate({ route }) { // route.params.
             </View>
             <View style={styles.camera}>
                 <View style={StyleSheet.absoluteFill} marginLeft={30} marginTop={18}>
-                    <Svg height={35} width={40}  >
+                    <Svg height={35} width={40} onPress={pickImageFromLibrary} >
                         <Image
-                            onPress={() => pickImageFromLibrary}
+                            //onPress={() => pickImageFromLibrary}
                             href={require('../image/ion_camera-sharp.png')}
                             height={40}
                             width={40}
@@ -117,10 +165,10 @@ export default function Rate({ route }) { // route.params.
                 multiline={true}
                 style={styles.usernametext}
                 placeholder="Please share what you like about this product"
-                placeholderTextColor={color.white} 
+                placeholderTextColor={color.white}
                 onChangeText={newText => setUserComment(newText)}
                 defaultValue={UserComment}
-                />
+            />
             <View style={styles.button2}>
                 <Text style={styles.buttonText2} onPress={RateProduct}>Send</Text>
             </View>
